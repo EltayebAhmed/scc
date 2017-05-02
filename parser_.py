@@ -1,9 +1,12 @@
 from tokens import *
+
 def do_something(*args):
     print(args)
+    print('\n')
+    return args
 
 
-class Parser(object):
+class Parser:
     def __init__(self, lexer):
         self.lexer = lexer
         # set current token to the first token taken from the input
@@ -24,9 +27,13 @@ class Parser(object):
 
     def type_spec(self):
         if self.current_token == VOID:
-            return do_something(VOID)
-        self.error()
-        
+            node = do_something(VOID)
+            self.eat(VOID.type)
+        else:
+            node =None
+            self.error()
+        return node
+
     def program(self):
         program = []
         while self.current_token.type != EOF:
@@ -60,8 +67,9 @@ class Parser(object):
         """statement : (funccall
             | RETURN
             | empty)"""
-        if self.current_token in (RETURN):
+        if self.current_token in (RETURN,):
             node = RETURN
+            self.eat(RETURN.type)
         elif self.current_token.type == ID:
             node = self.funccall()
         else:
@@ -85,7 +93,7 @@ class Parser(object):
         token = self.current_token
         if self.current_token.type == INTEGER:
             self.eat(INTEGER)
-            return do_something(token._value)
+            return do_something(token.value)
         else:
             return do_something(self.funccall())
 

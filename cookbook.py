@@ -8,3 +8,4 @@ class Enum:
     def __str__(self):
         return "<%s , %s >" % (self.__class__.__name__ , self.name)
 
+    __repr__ = __str__

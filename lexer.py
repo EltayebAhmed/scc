@@ -47,7 +47,7 @@ class Lexer(object):
             self.advance()
 
 
-        token = Token('INTEGER_CONST', int(result))
+        token = Token(INTEGER, int(result))
         return token
 
     def get_next_token(self):
