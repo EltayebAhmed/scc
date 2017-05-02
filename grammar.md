@@ -16,14 +16,14 @@ funcdef : type_spec ID LPAREN RPAREN OPENCURLY compoundstatement CLOSECURLY
 
 compoundstatement: statement_list
 
-statement_list: statement (SEMICOLON)
+statement_list: statement (SEMICOLON statement)*
 
-statement :  funccall
+statement : (funccall
             | RETURN
-            | empty
+            | empty)
 
 
 
 funccall : ID LPAREN ((expression (COMA expression)+) | empty) RPAREN
 
-expression: INTEGER
+expression: INTEGER | funcall

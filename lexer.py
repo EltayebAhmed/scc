@@ -39,6 +39,17 @@ class Lexer(object):
         token = KEYWORDS.get(result, Token(ID, result))
         return token
 
+    def number(self):
+        """Return a (multidigit) integer or float consumed from the input."""
+        result = ''
+        while self.current_char is not None and self.current_char.isdigit():
+            result += self.current_char
+            self.advance()
+
+
+        token = Token('INTEGER_CONST', int(result))
+        return token
+
     def get_next_token(self):
         """Lexical analyzer (also known as scanner or tokenizer)
         This method is responsible for breaking a sentence
@@ -54,9 +65,6 @@ class Lexer(object):
             if self.current_char.isalpha():
                 return self._id()
 
-            if self.current_char == ';':
-                self.advance()
-                return Token(SEMI, ';')
 
 
             if self.current_char == '(':
@@ -67,6 +75,24 @@ class Lexer(object):
                 self.advance()
                 return Token(RPAREN, ')')
 
+            if self.current_char == '{':
+                self.advance()
+                return Token(OPENCURLY, "{")
+
+            if self.current_char == "}":
+                self.advance()
+                return Token(CLOSE_CURLY, "}")
+
+            if self.current_char == ';':
+                self.advance()
+                return Token(SEMICOLON, ';')
+
+            if self.current_char == ",":
+                self.advance()
+                return Token(COMA, ',')
+
+            if self.current_char.isdigit():
+                return self.number()
 
             self.error()
 
