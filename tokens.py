@@ -8,28 +8,31 @@ from cookbook import Enum
 class TokenType(Enum):
     pass
 
-SEMI = TokenType("SEMICOLON;")
-EOF = TokenType("EOF")
+LPAREN = TokenType("LPARAN(")
+RPAREN = TokenType("RPARAN)")
 OPENCURLY = TokenType("OPENCURLY{")
 CLOSE_CURLY = TokenType("CLOSECURLY}")
-RPAREN = TokenType("RPARAN)")
-LPAREN = TokenType("LPARAN(")
-QUOTE = TokenType('"')
+SEMICOLON = TokenType("SEMICOLON;")
+COMA = TokenType("COMA,")
+EOF = TokenType("EOF")
 
-ID = TokenType("ID"),
 __VOID = TokenType("VOID")  # Keywords will have single token instances, the token type will not be used
 __RETURN = TokenType("RETURN")
 
+ID = TokenType("ID"),
+
+INTEGER = TokenType("INTEGER")
 
 
 class Token:
-    def __init__(self, type, value):
+    def __init__(self, _type, value):
+        assert (isinstance(_type,TokenType))
         self._type = type
         self._value = value
 
     def __str__(self):
         return "<Token, %s: %s>" %(type.__name__, self._value)
 
-KEYWORDS  = { 'void': Token(__VOID, 'VOID'),
+KEYWORDS  = {'void': Token(__VOID, 'VOID'),
               'return': Token(__RETURN, 'return')
               }
