@@ -26,4 +26,4 @@ statement : (funccall
 
 funccall : ID LPAREN ((expression (COMA expression)+) | empty) RPAREN
 
-expression: INTEGER | funcall
+expression: INTEGER | funccall
