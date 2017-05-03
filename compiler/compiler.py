@@ -22,18 +22,16 @@ class Compiler(NodeVisitor):
         code += "add esp, %i\n" %esp_count
         return code
 
-    def visit_MultiStatement(self, node):
-        code = ""
-        for statement in node.statements:
-            code += self.visit(statement)
-        return code
 
     def visit_NoOperation(self, node):
         return ""
 
-    def visit_scope_block(self, node):
-        # later scoping will be handled here
-        return self.visit(node.body)
+    def visit_ScopeBlock(self, node):
+        # later scoping will be handled here as well
+        code = ""
+        for statement in node.statements:
+            code += self.visit(statement)
+        return code
 
     def visit_FunctionDefinition(self, node):
         code = "_%s: \n" % node.name
@@ -48,8 +46,7 @@ class Compiler(NodeVisitor):
         # remove extern printf when the Symbol Resource Table Arrives
         code = """"global _main
 extern _printf
-section .text
-        """
+section .text\n"""
         for func in node.functions:
             code += self.visit(func)
         return code

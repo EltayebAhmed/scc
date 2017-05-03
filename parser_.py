@@ -28,7 +28,8 @@ class Parser:
         else:
             self.error()
 
-    def type_spec(self):
+    def ret_type(self):
+        """VOID"""
         if self.current_token == VOID:
             type_ = VOID
             self.eat(VOID.type)
@@ -38,42 +39,40 @@ class Parser:
         return type_
 
     def program(self):
+        """program: (funcdef) * EOF"""
         func_list = []
         while self.current_token.type != EOF:
             func_list.append(self.funcdef())
         return Program(func_list)
 
     def funcdef(self):
-        ret_type = self.type_spec()
+        """funcdef : type_spec ID LPAREN RPAREN scope_block"""
+        ret_type = self.ret_type()
         name = self.current_token.value
         self.eat(ID)
         self.eat(LPAREN)
         self.eat(RPAREN)
-        self.eat(OPENCURLY)
-        body = self.compound_statement()
-        self.eat(CLOSE_CURLY)
+        body = self.scope_block()
         return FunctionDefinition(ret_type, name, body)
 
-    def compound_statement(self):
-        return self.statement_list()
 
-    def statement_list(self):
-        """statement_list: statement ( (SEMICOLON statement)* SEMICOLON) [0-1]"""
+    def scope_block(self):
+        """scope_block: OPENCURLY (statement SEMICOLON)* CLOSECURLY"""
         statements = []
-        statements.append(self.statement())
-        while self.current_token.type == SEMICOLON:
-            self.eat(SEMICOLON)
+        self.eat(OPENCURLY)
+        while self.current_token.type != CLOSE_CURLY:
             statements.append(self.statement())
-        return MultiStatement(statements)
+            self.eat(SEMICOLON)
+        self.eat(CLOSE_CURLY)
+        return ScopeBlock(statements)
 
     def statement(self):
         """statement : (funccall
             | RETURN
             | empty)"""
-        statement = None
         if self.current_token in (RETURN,):
             self.eat(RETURN.type)
-            return Return()
+            statement = Return()
 
         elif self.current_token.type == ID:
             statement = self.funccall()
@@ -83,7 +82,7 @@ class Parser:
         return statement
 
     def funccall(self):
-        """funccall : ID LPAREN ((expression (COMA expression)+) | empty) RPAREN"""
+        """funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN"""
         name = self.current_token.value
         parameters = []
         self.eat(ID)

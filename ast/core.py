@@ -23,11 +23,12 @@ class FunctionDefinition(ASTNode):
 
 
 class ScopeBlock(ASTNode):
-    def __init__(self, body):
-        self.body = body
+    def __init__(self, statements):
+        self.statements = statements    # list of statements
 
     def __repr__(self):
-        return "ScopeBlock <id: %i, body_id:%i>" %(id(self), id(self.body))
+        return "ScopeBlock <id: %i, body_id:%i>" %(id(self), id(self.statements))
+
 
 class NoOperation(ASTNode):
     def __init__(self):
@@ -37,12 +38,6 @@ class NoOperation(ASTNode):
     def __repr__(self):
         return "NoOperation"
 
-class MultiStatement(ASTNode):
-    # This class represents both compound statements and statement lists.
-    # There is no difference between the two in the AST because the only reason
-    # They BOTH exist is for syntaxical correctnes which is abstracted away here
-    def __init__(self, statements):
-        self.statements = statements
 
 class FunctionCall(ASTNode):
     def __init__(self, callee_name, parameters):

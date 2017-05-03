@@ -8,16 +8,13 @@ This file is contains all the currently implemented grammar.
 %tokens INTEGER ID
 
 
-type_spec: VOID
+ret_type: VOID
 
 program : (funcdef)* EOF
 
-funcdef : type_spec ID LPAREN RPAREN OPENCURLY compoundstatement CLOSECURLY
+funcdef : type_spec ID LPAREN RPAREN scope_block
 
-compoundstatement: statement_list  // will grow into (statment_list | flow_block| scope_block)+ because semicolon handling
-
-
-statement_list: statement  (SEMICOLON statement)* SEMICOLON
+scope_block: OPENCURLY (statement SEMICOLON)* CLOSECURLY
 
 statement : (funccall
             | RETURN
@@ -25,6 +22,6 @@ statement : (funccall
 
 
 
-funccall : ID LPAREN ((expression (COMA expression)+) | empty) RPAREN
+funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN
 
 expression: INTEGER | funccall
