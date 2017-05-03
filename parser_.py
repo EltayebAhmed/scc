@@ -69,7 +69,7 @@ class Parser:
         """statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
-            | empty (SEMICOLON)[0-1])"""
+            | SEMICOLON"""
 
         if self.current_token.type == ID:
             statement = self.funccall()
@@ -82,11 +82,10 @@ class Parser:
 
         elif self.current_token.type == OPENCURLY:
             statement = self.scope_block()
-        elif self.current_token.type in (SEMICOLON, OPENCURLY):
+        elif self.current_token.type == SEMICOLON:
             # Empty statement
             statement = NoOperation()
-            if self.current_token.type == SEMICOLON:
-                self.eat(SEMICOLON)
+            self.eat(SEMICOLON)
         else:
             self.error()
         return statement

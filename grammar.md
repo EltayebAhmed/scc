@@ -19,7 +19,7 @@ scope_block: OPENCURLY (statement)* CLOSECURLY
 statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
-            | empty SEMICOLON)
+            | SEMICOLON)
 
 
 
