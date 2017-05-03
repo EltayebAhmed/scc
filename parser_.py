@@ -82,11 +82,13 @@ class Parser:
 
         elif self.current_token.type == OPENCURLY:
             statement = self.scope_block()
-        else:
+        elif self.current_token.type in (SEMICOLON, OPENCURLY):
             # Empty statement
             statement = NoOperation()
             if self.current_token.type == SEMICOLON:
                 self.eat(SEMICOLON)
+        else:
+            self.error()
         return statement
 
     def funccall(self):
