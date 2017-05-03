@@ -57,28 +57,36 @@ class Parser:
 
 
     def scope_block(self):
-        """scope_block: OPENCURLY (statement SEMICOLON)* CLOSECURLY"""
+        """scope_block: OPENCURLY (statement)* CLOSECURLY"""
         statements = []
         self.eat(OPENCURLY)
         while self.current_token.type != CLOSE_CURLY:
             statements.append(self.statement())
-            self.eat(SEMICOLON)
         self.eat(CLOSE_CURLY)
         return ScopeBlock(statements)
 
     def statement(self):
-        """statement : (funccall
-            | RETURN
-            | empty)"""
-        if self.current_token in (RETURN,):
+        """statement : (funccall SEMICOLON)
+            | (RETURN SEMICOLON)
+            | scope_block
+            | empty (SEMICOLON)[0-1])"""
+
+        if self.current_token.type == ID:
+            statement = self.funccall()
+            self.eat(SEMICOLON)
+
+        elif self.current_token in (RETURN,):
             self.eat(RETURN.type)
             statement = Return()
+            self.eat(SEMICOLON)
 
-        elif self.current_token.type == ID:
-            statement = self.funccall()
+        elif self.current_token.type == OPENCURLY:
+            statement = self.scope_block()
         else:
             # Empty statement
             statement = NoOperation()
+            if self.current_token.type == SEMICOLON:
+                self.eat(SEMICOLON)
         return statement
 
     def funccall(self):

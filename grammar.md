@@ -14,11 +14,12 @@ program : (funcdef)* EOF
 
 funcdef : type_spec ID LPAREN RPAREN scope_block
 
-scope_block: OPENCURLY (statement SEMICOLON)* CLOSECURLY
+scope_block: OPENCURLY (statement)* CLOSECURLY
 
-statement : (funccall
-            | RETURN
-            | empty)
+statement : (funccall SEMICOLON)
+            | (RETURN SEMICOLON)
+            | scope_block
+            | empty SEMICOLON)
 
 
 
