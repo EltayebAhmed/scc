@@ -1,8 +1,11 @@
 from tokens import *
+from ast.core import *
+
 
 def do_something(*args):
     print(args)
     print('\n')
+    raise  Exception('I shouldnt be called')
     return args
 
 
@@ -27,75 +30,82 @@ class Parser:
 
     def type_spec(self):
         if self.current_token == VOID:
-            node = do_something(VOID)
+            type_ = VOID
             self.eat(VOID.type)
         else:
-            node =None
+            type_ = None
             self.error()
-        return node
+        return type_
 
     def program(self):
-        program = []
+        func_list = []
         while self.current_token.type != EOF:
-            program.append(self.funcdef())
-        return do_something(program)
+            func_list.append(self.funcdef())
+        return Program(func_list)
 
     def funcdef(self):
         ret_type = self.type_spec()
-        name = self.current_token
+        name = self.current_token.value
         self.eat(ID)
         self.eat(LPAREN)
         self.eat(RPAREN)
         self.eat(OPENCURLY)
         body = self.compound_statement()
         self.eat(CLOSE_CURLY)
-        return do_something(ret_type, name, body)
+        return FunctionDefinition(ret_type, name, body)
 
     def compound_statement(self):
-        return do_something(self.statement_list())
+        return self.statement_list()
 
     def statement_list(self):
-        """statement_list: statement (SEMICOLON statement)*"""
-        nodes = []
-        nodes.append(self.statement())
+        """statement_list: statement ( (SEMICOLON statement)* SEMICOLON) [0-1]"""
+        statements = []
+        statements.append(self.statement())
         while self.current_token.type == SEMICOLON:
             self.eat(SEMICOLON)
-            nodes.append(self.statement())
-        return do_something(nodes)
+            statements.append(self.statement())
+        return MultiStatement(statements)
 
     def statement(self):
         """statement : (funccall
             | RETURN
             | empty)"""
+        statement = None
         if self.current_token in (RETURN,):
-            node = RETURN
             self.eat(RETURN.type)
+            return Return()
+
         elif self.current_token.type == ID:
-            node = self.funccall()
+            statement = self.funccall()
         else:
             # Empty statement
-            node = 'EMPTY STATEMENT'
-        return do_something(node)
+            statement = NoOperation()
+        return statement
 
     def funccall(self):
         """funccall : ID LPAREN ((expression (COMA expression)+) | empty) RPAREN"""
-        name = self.current_token
+        name = self.current_token.value
         parameters = []
         self.eat(ID)
         self.eat(LPAREN)
         while self.current_token.type != RPAREN:
             parameters.append(self.expression())
+            while self.current_token.type == COMA:
+                self.eat(COMA)
+                parameters.append(self.expression())
         self.eat(RPAREN)
-        return do_something(name, parameters)
+        return FunctionCall(name, parameters)
 
     def expression(self):
         """expression: INTEGER | funcall"""
+        # At some point it might be a good idea to create an expression ASTNode and
+        # wrap all nodes instatiated her by it
         token = self.current_token
         if self.current_token.type == INTEGER:
             self.eat(INTEGER)
-            return do_something(token.value)
+            return ExplicitConstant(token.value, 'INTEGER') # remove string
         else:
-            return do_something(self.funccall())
+            return self.funccall()
 
     def parse(self):
         """"

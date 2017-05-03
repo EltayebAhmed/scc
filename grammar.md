@@ -14,9 +14,10 @@ program : (funcdef)* EOF
 
 funcdef : type_spec ID LPAREN RPAREN OPENCURLY compoundstatement CLOSECURLY
 
-compoundstatement: statement_list
+compoundstatement: statement_list  // will grow into (statment_list | flow_block| scope_block)+ because semicolon handling
 
-statement_list: statement (SEMICOLON statement)*
+
+statement_list: statement  (SEMICOLON statement)* SEMICOLON
 
 statement : (funccall
             | RETURN
