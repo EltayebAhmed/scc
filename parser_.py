@@ -5,7 +5,7 @@ from ast.core import *
 def do_something(*args):
     print(args)
     print('\n')
-    raise  Exception('I shouldnt be called')
+    raise Exception('I shouldnt be called')
     return args
 
 
