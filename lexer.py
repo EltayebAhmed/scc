@@ -107,7 +107,11 @@ class Lexer(object):
 
             if self.current_char == '/':
                 self.advance()
-                return Token(DIV, '/')
+                if self.current_char == '/':
+                    self.advance()
+                    return Token(INT_DIV, '//')
+                else:
+                    self.error()
 
             self.error()
 

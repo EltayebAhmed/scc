@@ -30,4 +30,4 @@ while_statement : WHILE LPAREN expression RPAREN statement
 funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN
 expression   : term ((PLUS | MINUS) term)*
 term   : factor ((MUL | DIV) factor)*
-factor : INTEGER | funccall | LPAREN expression RPAREN
+factor :(PLUS|MINUS)factor | INTEGER | funccall | LPAREN expression RPAREN

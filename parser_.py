@@ -34,9 +34,17 @@ class Parser:
     def factor(self):
         """factor : INTEGER"""
         token = self.current_token
-        if token.type == INTEGER:
+        if token.type == PLUS:
+            self.eat(PLUS)
+            node = UnaryOp(token, self.factor())
+            return node
+        elif token.type == MINUS:
+            self.eat(MINUS)
+            node = UnaryOp(token, self.factor())
+            return node
+        elif token.type == INTEGER:
             self.eat(INTEGER)
-            return Num(token)
+            return ExplicitConstant(token.value,INT)
         elif token.type == LPAREN:
             self.eat(LPAREN)
             node = self.expression()
@@ -44,16 +52,16 @@ class Parser:
             return node
 
     def term(self):
-        """term : factor ((MUL | DIV) factor)*"""
+        """term : factor ((MUL | INT_DIV) factor)*"""
         node = self.factor()
 
-        while self.current_token.type in (MUL, DIV):
+        while self.current_token.type in (MUL, INT_DIV):
             token = self.current_token
             if token.type == MUL:
                 self.eat(MUL)
-            elif token.type == DIV:
-                self.eat(DIV)
-        node = BinOp(left=node, op=token, right=self.factor())
+            elif token.type == INT_DIV:
+                self.eat(INT_DIV)
+            node = BinOp(left=node, op=token, right=self.factor())
 
         return node
 
@@ -65,7 +73,7 @@ class Parser:
         17
 
         expr   : term ((PLUS | MINUS) term)*
-        term   : factor ((MUL | DIV) factor)*
+        term   : factor ((MUL | INT_DIV) factor)*
         factor : INTEGER
         """
         node = self.term()
@@ -168,17 +176,7 @@ class Parser:
         self.eat(RPAREN)
         return FunctionCall(name, parameters)
 
-    def expression(self):
-        """expression: INTEGER | funcall"""
-        # At some point it might be a good idea to create an expression ASTNode and
-        # wrap all nodes instatiated her by it
-        token = self.current_token
-        if self.current_token.type == INTEGER:
-            self.eat(INTEGER)
 
-            return ExplicitConstant(token.value, INT) # remove string
-        else:
-            return self.funccall()
 
     def parse(self):
         """"

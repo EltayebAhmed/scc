@@ -48,19 +48,16 @@ class FunctionCall(ASTNode):
     def __init__(self, callee_name, parameters):
         self.callee_name = callee_name
         self.parameters = parameters
-class BinOp(AST):
+class BinOp(ASTNode):
     def __init__(self, left, op, right):
         self.left = left
         self.token = self.op = op
         self.right = right
-class Num(AST):
-    def __init__(self, token):
-        self.token = token
-        self.value = token.value
-class UnaryOp(AST):
-    def __init__(self, op, expr):
+
+class UnaryOp(ASTNode):
+    def __init__(self, op, expression):
         self.token = self.op = op
-        self.expr = expr
+        self.expression = expression
 
 
 class BinOp(ASTNode):
@@ -73,9 +70,9 @@ class Num(ASTNode):
         self.token = token
         self.value = token.value
 class UnaryOp(ASTNode):
-    def __init__(self, op, expr):
+    def __init__(self, op, expression):
         self.token = self.op = op
-        self.expr = expr
+        self.expression = expression
 
 
 class ExplicitConstant(ASTNode):

@@ -1,8 +1,8 @@
 # this files contains the Token definition and token types
 
 from cookbook import Enum
-INTEGER, PLUS, MINUS, MUL, DIV, EOF = (
-    'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', 'EOF'
+INTEGER, PLUS, MINUS, MUL, INT_DIV, EOF = (
+    'INTEGER', 'PLUS', 'MINUS', 'MUL', 'INT_DIV', 'EOF'
 )
 
 class TokenType(Enum):
@@ -30,7 +30,7 @@ COMA = TokenType("COMA,")
 PLUS = TokenType("PLUS+")
 MINUS = TokenType("MINUS-")
 MUL= TokenType("MUL*")
-DIV= TokenType("DIV/")
+INT_DIV= TokenType("INT_DIV//")
 EOF = TokenType("EOF")
 
 
