@@ -103,6 +103,6 @@ section .text\n"""
         return code
 
     def visit_BreakStatement(self,node):
-        topItem = self.loop_switch_stack.get_top_loop_switch()
-        code = "jmp __while_label_end"+str(id(topItem)) + ":\n"
+        top_item = self.loop_switch_stack.get_top_loop_switch()
+        code = "jmp __while_label_end"+str(id(top_item)) + ":\n"
         return code

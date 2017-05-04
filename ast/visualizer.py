@@ -80,10 +80,10 @@ class Visualizer(NodeVisitor):
     def visit_WhileStatement(self,node):
         node_id = str(id(node))
         self.graph.node(node_id,"WHILE")
-        statement = node.statement
+        expr = node.expression
         block = node.block
 
-        expr_id = self.visit(statement)
+        expr_id = self.visit(expr)
         block_id = self.visit(block)
 
         self.graph.edge(node_id,expr_id)
