@@ -95,3 +95,10 @@ class Lexer(object):
             self.error()
 
         return Token(EOF, None)
+
+    def peek_token(self):
+        """This function return the next toke without changing the lexers state (without changing the current token)"""
+        old_pos, old_char = self.pos, self.current_char
+        token = self.get_next_token()
+        self.pos, self.current_char = old_pos, old_char
+        return token

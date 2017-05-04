@@ -22,6 +22,11 @@ class FunctionDefinition(ASTNode):
                (self.ret_type, self.name, id(self.body))
 
 
+class MultiNode(ASTNode):
+    def __init__(self, nodes):
+        self.nodes = nodes    # list of statements
+
+
 class ScopeBlock(ASTNode):
     def __init__(self, statements):
         self.statements = statements    # list of statements
@@ -49,6 +54,7 @@ class ExplicitConstant(ASTNode):
         # At some point this should also have 'Data type field'
         self.value = value
         self.type = type_
+
 
 class Return(ASTNode):
     def __init__(self):

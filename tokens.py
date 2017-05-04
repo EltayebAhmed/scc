@@ -25,6 +25,9 @@ SEMICOLON = TokenType("SEMICOLON;")
 COMA = TokenType("COMA,")
 EOF = TokenType("EOF")
 
+ID = TokenType("ID")
+INTEGER = TokenType("INTEGER")
+
 __VOID = TokenType("VOID")  # Keywords will have single token instances, the token type will not be used
 VOID = Token(__VOID, 'VOID')
 
@@ -42,11 +45,17 @@ BREAK = Token(__BREAK,"BREAK")
 
 ID = TokenType("ID")
 
+__INT = TokenType("INT")
+INT = Token(__INT, "INT")
+
+
 INTEGER = TokenType("INTEGER")
 
 
 KEYWORDS  = {'void': VOID,
               'return': RETURN,
-             'if': IF
-             'esle': ELSE
-              }
+             'if': IF,
+             'esle': ELSE,
+
+              'int': INT}
+

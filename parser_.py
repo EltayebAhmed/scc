@@ -15,6 +15,9 @@ class Parser:
         # set current token to the first token taken from the input
         self.current_token = self.lexer.get_next_token()
 
+    def peek_token(self):
+        return self.lexer.peek_token()
+
     def error(self):
         raise Exception('Invalid syntax')
 
@@ -129,7 +132,7 @@ class Parser:
         token = self.current_token
         if self.current_token.type == INTEGER:
             self.eat(INTEGER)
-            return ExplicitConstant(token.value, 'INTEGER') # remove string
+            return ExplicitConstant(token.value, INT) # remove string
         else:
             return self.funccall()
 
