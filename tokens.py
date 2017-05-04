@@ -1,7 +1,9 @@
 # this files contains the Token definition and token types
 
 from cookbook import Enum
-
+INTEGER, PLUS, MINUS, MUL, DIV, EOF = (
+    'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', 'EOF'
+)
 
 class TokenType(Enum):
     pass
@@ -23,6 +25,10 @@ OPENCURLY = TokenType("OPENCURLY{")
 CLOSE_CURLY = TokenType("CLOSECURLY}")
 SEMICOLON = TokenType("SEMICOLON;")
 COMA = TokenType("COMA,")
+PLUS = TokenType("PLUS+")
+MINUS = TokenType("MINUS-")
+MUL= TokenType("MUL*")
+DIV= TokenType("DIV/")
 EOF = TokenType("EOF")
 
 __VOID = TokenType("VOID")  # Keywords will have single token instances, the token type will not be used
