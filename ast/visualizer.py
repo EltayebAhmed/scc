@@ -3,8 +3,9 @@ from graphviz import Digraph
 
 
 class Visualizer(NodeVisitor):
-    def __init__(self):
+    def __init__(self, parser):
         self.graph = Digraph(comment="The Round Table")
+        self.parser = parser
 
     def visit(self, node):
         method_name = 'visit_' + type(node).__name__
@@ -75,6 +76,7 @@ class Visualizer(NodeVisitor):
         self.graph.node(node_id, str(node.value))
 
         return node_id
-    def run(self,node):
-        self.visit(node)
+
+    def visualize(self):
+        self.visit(self.parser.parse())
         self.graph.render('test-output/round-table.gv',view=True)
