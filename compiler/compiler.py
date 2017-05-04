@@ -4,22 +4,22 @@ from tokens import INT
 
 class LoopSwitchStack:
     def __init__(self):
-        self._scopes = []
+        self._items = []
 
-    def add_item(self, scope):
-        assert (isinstance(scope, WhileStatement))
-        self._scopes.append(scope)
+    def add_item(self, item):
+        assert (isinstance(item, WhileStatement))
+        self._items.append(item)
 
-    def exit_item(self, scope):
+    def exit_item(self, item):
         # 'eat' scope
-        assert (self._scopes[-1] == scope)
-        self._scopes.pop()
+        assert (self._items[-1] == item)
+        self._items.pop()
 
     def get_top_loop_switch(self):
-        if len(self._scopes) == 0:
+        if len(self._items) == 0:
             raise Exception("None valid syntax")
         else:
-            return self._scopes[-1]
+            return self._items[-1]
 
 
 class Compiler(NodeVisitor):
@@ -103,5 +103,6 @@ section .text\n"""
         return code
 
     def visit_BreakStatement(self,node):
-        code = "jmp __while_label_end"+str(id(self.loop_switch_stack.get_top_loop_switch()))+":\n"
+        topItem = self.loop_switch_stack.get_top_loop_switch()
+        code = "jmp __while_label_end"+str(id(topItem)) + ":\n"
         return code
