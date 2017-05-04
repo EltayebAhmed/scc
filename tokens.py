@@ -31,11 +31,22 @@ VOID = Token(__VOID, 'VOID')
 __RETURN = TokenType("RETURN")
 RETURN = Token(__RETURN, "RETURN")
 
+__IF = TokenType("IF")
+IF = Token(__IF,"IF")
+
+__ELSE = TokenType("ELSE")
+ELSE = Token(__ELSE,"ELSE")
+
+__BREAK = TokenType("BREAK")
+BREAK = Token(__BREAK,"BREAK")
+
 ID = TokenType("ID")
 
 INTEGER = TokenType("INTEGER")
 
 
 KEYWORDS  = {'void': VOID,
-              'return': RETURN
+              'return': RETURN,
+             'if': IF
+             'esle': ELSE
               }

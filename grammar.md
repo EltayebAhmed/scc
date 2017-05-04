@@ -8,6 +8,8 @@ This file is contains all the currently implemented grammar.
 %tokens INTEGER ID
 
 
+*tokens IF ELSE BREAK
+
 ret_type: VOID
 
 program : (funcdef)* EOF
@@ -19,10 +21,13 @@ scope_block: OPENCURLY (statement)* CLOSECURLY
 statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
-            | SEMICOLON)
+            | SEMICOLON
+            | ifstatement
 
 
 
 funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN
 
 expression: INTEGER | funccall
+
+ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?

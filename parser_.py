@@ -65,6 +65,7 @@ class Parser:
         self.eat(CLOSE_CURLY)
         return ScopeBlock(statements)
 
+
     def statement(self):
         """statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
@@ -74,6 +75,9 @@ class Parser:
         if self.current_token.type == ID:
             statement = self.funccall()
             self.eat(SEMICOLON)
+
+        elif self.current_token.type == IF:
+            statement = self.ifstatement()
 
         elif self.current_token in (RETURN,):
             self.eat(RETURN.type)
@@ -88,6 +92,7 @@ class Parser:
             self.eat(SEMICOLON)
         else:
             self.error()
+
         return statement
 
     def funccall(self):
@@ -103,6 +108,19 @@ class Parser:
                 parameters.append(self.expression())
         self.eat(RPAREN)
         return FunctionCall(name, parameters)
+
+    def ifstatement(self):
+        self.eat(IF.type)
+        self.eat(LPAREN)
+        expression = self.expression()
+        self.eat(RPAREN)
+        body = self.statement()
+        if (self.current_token == ELSE):
+            self.eat(ELSE.type)
+            elsebody = self.statement()
+            return IfStatement(expression, body, elsebody)
+        return IfStatement(expression, body)
+
 
     def expression(self):
         """expression: INTEGER | funcall"""

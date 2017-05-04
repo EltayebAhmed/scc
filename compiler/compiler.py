@@ -8,6 +8,23 @@ class Compiler(NodeVisitor):
         head = self.parser.parse()
         return self.visit(head)
 
+    def visit_IfStatement(self, node):
+        endiflabel = "__endif" + str(id(node))
+        endelselabel = "__endelse" + str(id(node))
+
+        code += self.visit(self.expression)
+        code += "pop eax\n"
+        code += "jz "+label
+        code+= self.visit(self.body)
+        code+= self.visit()
+        code += endiflabel + "\n"
+
+        if(self.elsebody != None)
+            code +=
+            code += self.visit(self.elsebody)
+            code += endelselabel +"\n"
+        return code
+
     def visit_FunctionCall(self, node):
         code = ""
         esp_count = 0

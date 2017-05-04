@@ -54,6 +54,13 @@ class Return(ASTNode):
     def __init__(self):
         # Only hadling void returns for now
         pass
+
+class IfStatement(ASTNode):
+    def __init__(self,expression,body,elsebody = None):
+        self.expression = expression
+        self.body = body
+        self.elsebody = elsebody
+
 class NodeVisitor:
     def visit(self, node):
         method_name = 'visit_' + type(node).__name__
