@@ -1,5 +1,6 @@
 from ast.core import NodeVisitor, ExplicitConstant
 
+
 class Compiler(NodeVisitor):
     def __init__(self, parser):
         self.parser = parser
@@ -13,15 +14,14 @@ class Compiler(NodeVisitor):
         esp_count = 0
         for parameter in node.parameters[::-1]:
             if isinstance(parameter, ExplicitConstant) and parameter.type == 'INTEGER':
-                    code += "push %i ;    func parameter\n" % parameter.value
-                    esp_count += 4
+                code += "push %i ;    func parameter\n" % parameter.value
+                esp_count += 4
 
             else:
                 raise Exception("Don't know what to do!")
-        code += "call %s\n" %("_"+node.callee_name)
-        code += "add esp, %i\n" %esp_count
+        code += "call %s\n" % ("_" + node.callee_name)
+        code += "add esp, %i\n" % esp_count
         return code
-
 
     def visit_NoOperation(self, node):
         return ""
@@ -39,7 +39,7 @@ class Compiler(NodeVisitor):
         code += "ret"
         return code
 
-    def visit_Return(self,node):
+    def visit_Return(self, node):
         return "ret\n"
 
     def visit_Program(self, node):
@@ -49,4 +49,24 @@ extern _printf
 section .text\n"""
         for func in node.functions:
             code += self.visit(func)
+        return code
+
+    def visit_ExplicitConstant(self, node):
+
+        pass
+
+    def visit_WhileStatement(self, node):
+        start_label = '__while_label_start' + str(id(node))
+        end_label = '__while_label_end' + str(id(node))
+        code = ""
+        code += self.visit(node.expression)
+        code += "sub esp,4"
+
+        code += "jz " + end_label
+        code = start_label + ":"
+        code += self.visit(node.block)
+        code += self.visit(node.expression)
+        code += "sub esp,4"
+        code += "\njnz " + start_label
+        code += "\n " + end_label+":"
         return code
