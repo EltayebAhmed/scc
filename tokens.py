@@ -43,15 +43,32 @@ VOID = Token(__VOID, 'VOID')
 __RETURN = TokenType("RETURN")
 RETURN = Token(__RETURN, "RETURN")
 
+__IF = TokenType("IF")
+IF = Token(__IF,"IF")
+
+__ELSE = TokenType("ELSE")
+ELSE = Token(__ELSE,"ELSE")
+
+__BREAK = TokenType("BREAK")
+BREAK = Token(__BREAK,"BREAK")
+
+ID = TokenType("ID")
+
 __INT = TokenType("INT")
 INT = Token(__INT, "INT")
+
 
 INTEGER = TokenType("INTEGER")
 
 
-KEYWORDS = {'void': VOID,
-            'return': RETURN,
-            'while': WHILE,
-            'int': INT,
-            'break':BREAK
-            }
+
+KEYWORDS  = {'void': VOID,
+             'return': RETURN,
+             'if': IF,
+             'else': ELSE,
+             'int': INT,
+             'while': WHILE,
+             'break': BREAK
+             }
+
+

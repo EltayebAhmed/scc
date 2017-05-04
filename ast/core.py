@@ -81,6 +81,11 @@ class Return(ASTNode):
         # Only hadling void returns for now
         pass
 
+class IfStatement(ASTNode):
+    def __init__(self,expression,body,elsebody = None):
+        self.expression = expression
+        self.body = body
+        self.elsebody = elsebody
 
 class WhileStatement(ASTNode):
     def __init__(self, expression, block):

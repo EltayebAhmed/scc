@@ -32,6 +32,26 @@ class Compiler(NodeVisitor):
         head = self.parser.parse()
         return self.visit(head)
 
+    def visit_IfStatement(self, node):
+        endiflabel = "__endif" + str(id(node))
+        endelselabel = "__endelse" + str(id(node))
+        code = ""
+        code += self.visit(node.expression)
+        code += "pop eax\n"
+        code += "cmp eax,0\n";
+        code += "jz "+endiflabel + "\n"
+        code+= self.visit(node.body)
+
+        if (node.elsebody is not None):
+            code+= "jmp "+ endelselabel + "\n"
+
+        code += endiflabel + ":\n"
+
+        if(node.elsebody is not None):
+            code += self.visit(node.elsebody)
+            code += endelselabel +":\n"
+        return code
+
     def visit_FunctionCall(self, node):
         code = ""
         old_stack_pos = self.stack_pos
