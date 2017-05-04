@@ -8,16 +8,18 @@ INTEGER, PLUS, MINUS, MUL, DIV, EOF = (
 class TokenType(Enum):
     pass
 
+
 class Token:
     def __init__(self, type_, value):
-        assert (isinstance(type_,TokenType))
+        assert (isinstance(type_, TokenType))
         self.type = type_
         self.value = value
 
     def __str__(self):
-        return "<Token, %s: %s>" %(self.type.name, self.value)
+        return "<Token, %s: %s>" % (self.type.name, self.value)
 
     __repr__ = __str__
+
 
 LPAREN = TokenType("LPARAN(")
 RPAREN = TokenType("RPARAN)")
@@ -31,17 +33,28 @@ MUL= TokenType("MUL*")
 DIV= TokenType("DIV/")
 EOF = TokenType("EOF")
 
+
+__WHILE = TokenType("WHILE")
+WHILE = Token(__WHILE, "WHILE")
+
+ID = TokenType("ID")
+INTEGER = TokenType("INTEGER")
+
+
 __VOID = TokenType("VOID")  # Keywords will have single token instances, the token type will not be used
 VOID = Token(__VOID, 'VOID')
 
 __RETURN = TokenType("RETURN")
 RETURN = Token(__RETURN, "RETURN")
 
-ID = TokenType("ID")
+__INT = TokenType("INT")
+INT = Token(__INT, "INT")
 
 INTEGER = TokenType("INTEGER")
 
 
-KEYWORDS  = {'void': VOID,
-              'return': RETURN
-              }
+KEYWORDS = {'void': VOID,
+            'return': RETURN,
+            'while': WHILE,
+            'int': INT
+            }

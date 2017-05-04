@@ -2,7 +2,7 @@
 
 This file is contains all the currently implemented grammar.
 
-%tokens LPAREN RPAREN OPENCURLY CLOSECURLY SEMICOLON COMA EOF
+%tokens LPAREN RPAREN OPENCURLY CLOSECURLY SEMICOLON COMA EOF WHILE
 %tokens VOID
 %tokens RETURN
 %tokens INTEGER ID PLUS MINUS MUL DIV
@@ -20,6 +20,10 @@ statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
             | SEMICOLON
+            | while_statement
+
+while_statement : WHILE LPAREN expression RPAREN statement
+
 
 
 
