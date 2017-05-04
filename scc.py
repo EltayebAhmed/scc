@@ -21,4 +21,4 @@ comp = Compiler(parser=parser)
 viz = Visualizer(parser=parser)
 
 
-viz.visualize()
+print(comp.compile())
