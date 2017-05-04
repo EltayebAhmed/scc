@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 .DS_STORE
-test_output/
+test-output/
 # C extensions
 *.so
 
