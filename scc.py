@@ -9,6 +9,12 @@ void main(){
     return;
 }
 """
+code = """void main(){
+    int x = 5;
+    printf(x);
+    return;
+}
+"""
 
 lex = Lexer(text=code)
 parser = Parser(lexer=lex)

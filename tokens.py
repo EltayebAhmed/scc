@@ -23,7 +23,11 @@ OPENCURLY = TokenType("OPENCURLY{")
 CLOSE_CURLY = TokenType("CLOSECURLY}")
 SEMICOLON = TokenType("SEMICOLON;")
 COMA = TokenType("COMA,")
+EQUALS = TokenType("EQAULS=")
 EOF = TokenType("EOF")
+
+ID = TokenType("ID")
+INTEGER = TokenType("INTEGER")
 
 __VOID = TokenType("VOID")  # Keywords will have single token instances, the token type will not be used
 VOID = Token(__VOID, 'VOID')
@@ -31,11 +35,11 @@ VOID = Token(__VOID, 'VOID')
 __RETURN = TokenType("RETURN")
 RETURN = Token(__RETURN, "RETURN")
 
-ID = TokenType("ID")
+__INT = TokenType("INT")
+INT = Token(__INT, "INT")
 
-INTEGER = TokenType("INTEGER")
 
 
 KEYWORDS  = {'void': VOID,
-              'return': RETURN
-              }
+              'return': RETURN,
+              'int': INT}

@@ -22,6 +22,11 @@ class FunctionDefinition(ASTNode):
                (self.ret_type, self.name, id(self.body))
 
 
+class MultiNode(ASTNode):
+    def __init__(self, nodes):
+        self.nodes = nodes    # list of statements
+
+
 class ScopeBlock(ASTNode):
     def __init__(self, statements):
         self.statements = statements    # list of statements
@@ -44,16 +49,35 @@ class FunctionCall(ASTNode):
         self.callee_name = callee_name
         self.parameters = parameters
 
+
 class ExplicitConstant(ASTNode):
     def __init__(self, value, type_):
         # At some point this should also have 'Data type field'
         self.value = value
         self.type = type_
 
+
 class Return(ASTNode):
     def __init__(self):
         # Only hadling void returns for now
         pass
+
+
+class VarDeclaration(ASTNode):
+    def __init__(self, name, d_type):
+        self.name = name
+        self.type = d_type
+
+
+class Variable(ASTNode):
+    def __init__(self, name):
+        self.name = name
+
+class VariableAssignment(ASTNode):
+    def __init__(self, name, value):
+        self.value = value
+        self.name = name
+
 class NodeVisitor:
     def visit(self, node):
         method_name = 'visit_' + type(node).__name__
