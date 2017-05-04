@@ -79,9 +79,6 @@ class Parser:
             statement = self.funccall()
             self.eat(SEMICOLON)
 
-        elif self.current_token.type == IF:
-            statement = self.ifstatement()
-
         elif self.current_token in (RETURN,):
             self.eat(RETURN.type)
             statement = Return()
@@ -93,6 +90,10 @@ class Parser:
             # Empty statement
             statement = NoOperation()
             self.eat(SEMICOLON)
+
+        elif self.current_token == IF:
+            statement = self.ifstatement()
+
         else:
             self.error()
 
@@ -113,6 +114,7 @@ class Parser:
         return FunctionCall(name, parameters)
 
     def ifstatement(self):
+        """ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?"""
         self.eat(IF.type)
         self.eat(LPAREN)
         expression = self.expression()

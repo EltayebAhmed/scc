@@ -55,7 +55,6 @@ INTEGER = TokenType("INTEGER")
 KEYWORDS  = {'void': VOID,
               'return': RETURN,
              'if': IF,
-             'esle': ELSE,
-
+             'else': ELSE,
               'int': INT}
 
