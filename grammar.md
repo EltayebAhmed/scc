@@ -8,7 +8,7 @@ This file is contains all the currently implemented grammar.
 %tokens INTEGER ID
 
 
-*tokens IF ELSE BREAK
+*tokens IF ELSE WHILE BREAK
 
 ret_type: VOID
 

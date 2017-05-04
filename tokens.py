@@ -63,12 +63,12 @@ INTEGER = TokenType("INTEGER")
 
 
 KEYWORDS  = {'void': VOID,
-              'return': RETURN,
+             'return': RETURN,
              'if': IF,
              'else': ELSE,
-              'int': INT,
+             'int': INT,
              'while': WHILE,
-                'break':BREAK
+             'break': BREAK
              }
 
 
