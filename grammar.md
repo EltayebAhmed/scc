@@ -21,6 +21,7 @@ statement : (funccall SEMICOLON)
             | scope_block
             | SEMICOLON
             | while_statement
+            | (BREAK SEMICOLON)
 
 while_statement : WHILE LPAREN expression RPAREN statement
 

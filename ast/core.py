@@ -24,7 +24,7 @@ class FunctionDefinition(ASTNode):
 
 class MultiNode(ASTNode):
     def __init__(self, nodes):
-        self.nodes = nodes    # list of statements
+        self.nodes = nodes  # list of statements
 
 
 class ScopeBlock(ASTNode):
@@ -55,10 +55,14 @@ class BinOp(ASTNode):
         self.left = left
         self.token = self.op = op
         self.right = right
+
+
 class Num(ASTNode):
     def __init__(self, token):
         self.token = token
         self.value = token.value
+
+
 class UnaryOp(ASTNode):
     def __init__(self, op, expr):
         self.token = self.op = op
@@ -84,6 +88,12 @@ class WhileStatement(ASTNode):
         self.block = block
 
 
+class BreakStatement(ASTNode):
+    def __init__(self):
+        pass
+
+    def __repr__(self):
+        return "Break"
 
 
 class NodeVisitor:

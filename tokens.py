@@ -34,6 +34,8 @@ WHILE = Token(__WHILE, "WHILE")
 ID = TokenType("ID")
 INTEGER = TokenType("INTEGER")
 
+__BREAK = TokenType("BREAK")
+BREAK = Token(__BREAK,__BREAK)
 
 __VOID = TokenType("VOID")  # Keywords will have single token instances, the token type will not be used
 VOID = Token(__VOID, 'VOID')
@@ -50,5 +52,6 @@ INTEGER = TokenType("INTEGER")
 KEYWORDS = {'void': VOID,
             'return': RETURN,
             'while': WHILE,
-            'int': INT
+            'int': INT,
+            'break':BREAK
             }

@@ -8,7 +8,7 @@ void main(){
     printf(12,15);
 
     while(1){
-        return;
+        break;
     }
     return;
 }

@@ -100,6 +100,8 @@ class Parser:
             self.eat(SEMICOLON)
         elif self.current_token == WHILE:
             statement = self.while_statement()
+        elif self.current_token == BREAK:
+            statement = self.break_statement()
 
         else:
             self.error()
@@ -140,3 +142,8 @@ class Parser:
             self.error()
 
         return node
+
+    def break_statement(self):
+        self.eat(BREAK.type)
+        self.eat(SEMICOLON)
+        return BreakStatement()
