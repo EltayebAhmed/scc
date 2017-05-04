@@ -57,6 +57,33 @@ class Visualizer(NodeVisitor):
 
         return node_id
 
+    def visit_Variable(self, node):
+        node_id = str(id(node))
+        self.graph.node(node_id, "Var <%s>" %node.name)
+        return node_id
+
+    def visit_VariableAssignment(self,node):
+        node_id = str(id(node))
+        self.graph.node(node_id,"Assign <%s>"%node.name)
+        val_id = self.visit(node.value)
+        self.graph.edge(node_id,val_id)
+        return node_id
+
+    def visit_VariableDeclaration(self,node):
+        node_id = str(id(node))
+        self.graph.node(node_id, "Decl %s %s"%(node.type, node.name))
+        return node_id
+
+    def visit_MultiNode(self, node):
+        node_id = str(id(node))
+        self.graph.node(node_id, 'MultiNode')
+        children = []
+        for node in node.nodes:
+            children.append(self.visit(node))
+        for child in children:
+            self.graph.edge(node_id, child)
+        return node_id
+
     def visit_Program(self, node):
         # remove extern printf when the Symbol Resource Table Arrives
 

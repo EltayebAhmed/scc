@@ -158,7 +158,7 @@ class Parser:
         for decl in identifier_decls:
             if isinstance(decl,VariableAssignment):
                 # variable declaration with initialization
-                declaration = VarDeclaration(decl.name, d_type)
+                declaration = VariableDeclaration(decl.name, d_type)
                 nodes.append(declaration) # add the declaration
                 nodes.append(decl)        # add the assignment
 

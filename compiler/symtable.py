@@ -63,6 +63,7 @@ class ScopeStack:
 
     def exit_scope(self, scope):
         # 'eat' scope
+        assert (scope!= GLOBAL)
         assert (scope._scopes[-1]== scope)
         self._scopes.pop()
 
@@ -70,6 +71,9 @@ class ScopeStack:
         """Return true if 'scope' is active"""
         assert (isinstance(scope, ScopeBlock))
         return scope in self._scopes
+
+    def current_scope(self):
+        return self._scopes[:-1]
 
 SymbolTableEntry = namedtuple('SymbolTableEntry', ('symbol', 'type', 'scope' ))
 
@@ -81,7 +85,7 @@ class SymbolTable:
     def entries(self):
         return iter(self._entries.keys())
 
-    def add_entry(self,entry, position):
+    def add_entry(self,entry, position=None):
         assert isinstance(position, int)
         assert (isinstance(entry, SymbolTableEntry))
         self._entries[entry] = position
@@ -144,4 +148,17 @@ class SymbolTableBuilder(NodeVisitor):
     def visit_Return(self, node):
         pass
 
+    def visit_VariableDeclaration(self, node):
+        sym = Symbol(node.name)
+        cur_scope = self._scope_stack.current_scope()
+        entry = SymbolTableEntry(symbol=sym, type=node.d_type, scope=cur_scope)
+        self._symtable.add_entry(entry, None)
 
+    def visit_VariableAssignment(self, node):
+        pass
+
+    def visit_Variable(self, node):
+        sym = Symbol(node.name)
+        entry = self._symtable.get_entry_by_symbol(sym)
+        if entry is None:
+            raise SemanticError("Use of undeclared variable")

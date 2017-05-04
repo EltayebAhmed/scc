@@ -63,7 +63,7 @@ class Return(ASTNode):
         pass
 
 
-class VarDeclaration(ASTNode):
+class VariableDeclaration(ASTNode):
     def __init__(self, name, d_type):
         self.name = name
         self.type = d_type
