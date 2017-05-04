@@ -6,8 +6,7 @@ from compiler.compiler import Compiler
 code = """
 void main(){
     printf(12,15);
-    {};{{{}{}}};
-    printf(133,134,13335);
+
     while(1){
         return;
     }

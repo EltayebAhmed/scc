@@ -73,15 +73,12 @@ section .text\n"""
     def visit_WhileStatement(self, node):
         start_label = '__while_label_start' + str(id(node))
         end_label = '__while_label_end' + str(id(node))
-        code = ""
-        code += self.visit(node.expression)
-        code += "sub esp,4"
 
-        code += "jz " + end_label
-        code = start_label + ":"
-        code += self.visit(node.block)
+        code = start_label + ':\n'
         code += self.visit(node.expression)
-        code += "sub esp,4"
-        code += "\njnz " + start_label
-        code += "\n " + end_label + ":"
+        code += "pop eax\ncmp eax,0\n"
+        code += "jz " + end_label + '\n'
+        code += self.visit(node.block)
+        code += "\njmp " + start_label +'\n'
+        code += end_label + ":\n"
         return code
