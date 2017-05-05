@@ -32,7 +32,7 @@ class Parser:
             self.error()
 
     def factor(self):
-        """factor :factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | LPAREN expression RPAREN"""
+        """factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | LPAREN expression RPAREN"""
         token = self.current_token
         if token.type == PLUS:
             self.eat(PLUS)
