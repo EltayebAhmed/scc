@@ -138,15 +138,16 @@ mov ebp, esp\n"""
 
     def visit_Program(self, node):
         # remove extern printf when the Symbol Resource Table Arrives
-        code = "section .text\nglobal _main\nextern _printf\n"
+        header = "global _main\nextern _printf\n"
+        definitions_body = ""
         for func in node.functions:
-            code += self.visit(func)
+            definitions_body += self.visit(func)
 
-        final_code = "section .data\n"
+        data_section = "section .data\n"
         for string in self.strings:
-            final_code += string+"\n"
-        final_code += code
-        return final_code
+            data_section  += string+ "\n"
+        code = header + data_section + "section .text\n" + definitions_body
+        return code
 
     def visit_ExplicitConstant(self, node):
 
