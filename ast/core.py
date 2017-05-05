@@ -104,6 +104,13 @@ class SwitchStatement(ASTNode):
         self.default = default
 
 
+class CaseStatement(ASTNode):
+    def __init__(self, switch_expr, expression, statements):
+        self.switch_expr = switch_expr
+        self.expression = expression
+        self.statements = statements
+
+
 class BreakStatement(ASTNode):
     def __init__(self):
         pass

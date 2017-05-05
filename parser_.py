@@ -157,7 +157,6 @@ RPAREN statement"""
     def funccall(self):
         """funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN"""
         name = self.current_token.value
-        print(name)
         parameters = []
         self.eat(ID)
         self.eat(LPAREN)
@@ -187,8 +186,10 @@ RPAREN statement"""
         switch_statement :
          SWITCH LPAREN expression RPAREN
           OPENCURLY
-          (CASE COLON statement* )* (DEFAULT COLON statement*)?
+           case_statement*
+           (DEFAULT COLON statement*)?
           CLOSECURLY
+
         """
 
         self.eat(SWITCH.type)
@@ -198,17 +199,8 @@ RPAREN statement"""
         self.eat(OPENCURLY)
         cases = []
         while self.current_token == CASE:
-            self.eat(CASE.type)
-            case_expr = self.expression()
-            self.eat(COLON)
-            case_statements = []
-
-            while self.current_token != CASE and self.current_token != DEFAULT and self.current_token != CLOSE_CURLY:
-                case_statements.append(self.statement())
-
-            case_statements_node = MultiNode(case_statements, "statement")
-            case_node = MultiNode([case_expr, case_statements_node], "Case")
-            cases.append(case_node)
+            case = self.case_statement(expression)
+            cases.append(case)
 
         cases_node = MultiNode(cases, "Cases")
         if self.current_token == DEFAULT:
@@ -227,6 +219,21 @@ RPAREN statement"""
 
         self.eat(CLOSE_CURLY)
         return switch_node
+
+    def case_statement(self, switch_expr):
+        self.eat(CASE.type)
+
+        case_expr = self.expression()
+        self.eat(COLON)
+        case_statements = []
+
+        while self.current_token != CASE and self.current_token != DEFAULT and self.current_token != CLOSE_CURLY:
+            case_statements.append(self.statement())
+
+        case_statements_node = MultiNode(case_statements, "statement")
+        case = CaseStatement(switch_expr, case_expr, case_statements_node)
+        return case
+
     def expression(self):
         """expression: INTEGER | funcall"""
         # At some point it might be a good idea to create an expression ASTNode and

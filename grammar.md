@@ -33,7 +33,9 @@ while_statement : WHILE LPAREN expression RPAREN statement
 for_statement : FOR LPAREN expression (COMA expression)* SEMICOLON expression SEMICOLON expression (COMA expression)*
 RPAREN statement
 
-switch_statement : SWITCH LPAREN expression RPAREN OPENCURLY (CASE expression COLON statement* )* (DEFAULT COLON statement*)? CLOSECURLY
+switch_statement : SWITCH LPAREN expression RPAREN OPENCURLY case_statement* (DEFAULT COLON statement*)? CLOSECURLY
+
+case_statement = CASE expression COLON statement*
 
 ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?
 
