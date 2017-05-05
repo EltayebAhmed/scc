@@ -123,6 +123,7 @@ class Parser:
         self.eat(CLOSE_CURLY)
         return ScopeBlock(statements)
 
+
     def while_statement(self):
         """while_statement : WHILE LPAREN expression RPAREN statement"""
         self.eat(WHILE.type)
@@ -132,12 +133,14 @@ class Parser:
         block = self.scope_block()
         return WhileStatement(expression, block)
 
+
     def statement(self):
         """statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
             | SEMICOLON
-            | while_statement"""
+            | while_statement
+            | ifstatement"""
 
         if self.current_token.type == ID:
             statement = self.funccall()
@@ -154,8 +157,14 @@ class Parser:
             # Empty statement
             statement = NoOperation()
             self.eat(SEMICOLON)
+
+        elif self.current_token == IF:
+            statement = self.ifstatement()
+
         elif self.current_token == WHILE:
             statement = self.while_statement()
+        elif self.current_token == BREAK:
+            statement = self.break_statement()
 
         else:
             self.error()
@@ -176,6 +185,21 @@ class Parser:
         self.eat(RPAREN)
         return FunctionCall(name, parameters)
 
+    def ifstatement(self):
+        """ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?"""
+        self.eat(IF.type)
+        self.eat(LPAREN)
+        expression = self.expression()
+        self.eat(RPAREN)
+        body = self.statement()
+        if (self.current_token == ELSE):
+            self.eat(ELSE.type)
+            elsebody = self.statement()
+            return IfStatement(expression, body, elsebody)
+        return IfStatement(expression, body)
+
+
+
 
 
     def parse(self):
@@ -186,3 +210,8 @@ class Parser:
             self.error()
 
         return node
+
+    def break_statement(self):
+        self.eat(BREAK.type)
+        self.eat(SEMICOLON)
+        return BreakStatement()

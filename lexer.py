@@ -35,10 +35,8 @@ class Lexer(object):
         while self.current_char is not None and self.current_char.isalnum():
             result += self.current_char
             self.advance()
-
         token = KEYWORDS.get(result, Token(ID, result))
         return token
-
     def number(self):
         """Return a (multidigit) integer or float consumed from the input."""
         result = ''
