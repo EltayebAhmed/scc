@@ -148,6 +148,8 @@ RPAREN statement"""
             statement = self.for_statement()
         elif self.current_token == SWITCH:
             statement = self.switch_statement()
+        elif self.current_token.type == STRING:
+            statement = self.constant_string();
 
         else:
             self.error()
@@ -234,6 +236,11 @@ RPAREN statement"""
         case = CaseStatement(switch_expr, case_expr, case_statements_node)
         return case
 
+    def constant_string(self):
+        string = self.current_token.value
+        self.eat(STRING)
+        return ConstantString(string)
+
     def expression(self):
         """expression: INTEGER | funcall"""
         # At some point it might be a good idea to create an expression ASTNode and
@@ -241,8 +248,10 @@ RPAREN statement"""
         token = self.current_token
         if self.current_token.type == INTEGER:
             self.eat(INTEGER)
-
             return ExplicitConstant(token.value, INT)  # remove string
+
+        elif self.current_token.type == STRING:
+            return self.constant_string()
         else:
             return self.funccall()
 

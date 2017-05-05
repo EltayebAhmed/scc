@@ -152,6 +152,12 @@ class Visualizer(NodeVisitor):
         self.graph.edge(node_id,statements_id)
         return node_id
 
+    def visit_ConstantString(self, node):
+        node_id = str(id(node))
+        self.graph.node(node_id,'"'+node.string+'"')
+
+        return node_id
+
     def visualize(self):
         self.visit(self.parser.parse())
         self.graph.render('test-output/round-table.gv', view=True)

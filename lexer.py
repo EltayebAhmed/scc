@@ -91,10 +91,8 @@ class Lexer(object):
             if self.current_char.isdigit():
                 return self.number()
 
-
             if self.current_char == '"':
-                self.advance()
-                return Token(DOUBLE_QUOTE,'"')
+                return self.string()
 
             if self.current_char == ":":
                 self.advance()
@@ -128,3 +126,12 @@ class Lexer(object):
         token = self.get_next_token()
         self.pos, self.current_char = old_pos, old_char
         return token
+
+    def string(self):
+        self.advance()
+        result = ""
+        while self.current_char != '"':
+            result += self.current_char
+            self.advance()
+        self.advance()
+        return Token(STRING, result)

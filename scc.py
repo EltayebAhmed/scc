@@ -5,16 +5,7 @@ from compiler.compiler import Compiler
 code = """
 void main(){
 
-
-    switch(1){
-    case 1:
-        break;
-    case 2:
-        print(2);
-    default:
-        break;
-    }
-
+    printf("Hello world");
 
     return;
 }

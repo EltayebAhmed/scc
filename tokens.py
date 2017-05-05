@@ -32,6 +32,7 @@ CHAR = TokenType("CHAR")
 ESCAPED_CHAR = TokenType("ESCAPED_CHAR")
 EOF = TokenType("EOF")
 COLON = TokenType("COLON")
+STRING = TokenType("STRING")
 
 __WHILE = TokenType("WHILE")
 WHILE = Token(__WHILE, "WHILE")
@@ -47,6 +48,8 @@ DEFAULT = Token(__DEFAULT, "DEFAULT")
 
 __FOR = TokenType("FOR")
 FOR = Token(__FOR, "FOR")
+
+
 
 ID = TokenType("ID")
 INTEGER = TokenType("INTEGER")
