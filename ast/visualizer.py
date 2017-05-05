@@ -48,7 +48,7 @@ class Visualizer(NodeVisitor):
 
         b_id = self.visit(node.body)
 
-        self.graph.edge(node_id,b_id)
+        self.graph.edge(node_id, b_id)
         return node_id
 
     def visit_Return(self, node):
@@ -72,7 +72,7 @@ class Visualizer(NodeVisitor):
             self.graph.edge(node_id, func_id)
         return node_id
 
-    def visit_ExplicitConstant(self,node):
+    def visit_ExplicitConstant(self, node):
         node_id = str(id(node))
         self.graph.node(node_id, str(node.value))
 
@@ -93,26 +93,65 @@ class Visualizer(NodeVisitor):
             self.graph.edge(node_id, else_bod)
         return node_id
 
-    def visit_WhileStatement(self,node):
+    def visit_WhileStatement(self, node):
         node_id = str(id(node))
-        self.graph.node(node_id,"WHILE")
+        self.graph.node(node_id, "WHILE")
         expr = node.expression
         block = node.block
 
         expr_id = self.visit(expr)
         block_id = self.visit(block)
 
-        self.graph.edge(node_id,expr_id)
-        self.graph.edge(node_id,block_id)
+        self.graph.edge(node_id, expr_id)
+        self.graph.edge(node_id, block_id)
 
         return node_id
 
-    def visit_BreakStatement(self,node):
+    def visit_BreakStatement(self, node):
         node_id = str(id(node))
-        self.graph.node(node_id,"BREAK")
+        self.graph.node(node_id, "BREAK")
+        return node_id
+
+    def visit_MultiNode(self, node):
+        node_id = str(id(node))
+        self.graph.node(node_id, node.name)
+        sub_nodes = []
+        for sub_node in node.nodes:
+            sub_nodes.append(self.visit(sub_node))
+
+        for sub_node in sub_nodes:
+            self.graph.edge(node_id, sub_node)
+
+        return node_id
+
+    def visit_SwitchStatement(self, node):
+
+        node_id = str(id(node))
+
+        self.graph.node(node_id, "switch")
+        expr_id = self.visit(node.expression)
+        self.graph.edge(node_id, expr_id)
+        cases_id = self.visit(node.cases)
+        self.graph.edge(node_id, cases_id)
+        if node.default is not None:
+            default_id = self.visit(node.default)
+            self.graph.edge(node_id, default_id)
+
+        return node_id
+
+    def visit_CaseStatement(self, node):
+        node_id = str(id(node))
+        self.graph.node(node_id, "case")
+
+        switch_expr_id = self.visit(node.switch_expr)
+        self.graph.edge(node_id, switch_expr_id)
+
+        expression_id = self.visit(node.expression)
+        self.graph.edge(node_id,expression_id)
+        statements_id = self.visit(node.statements)
+        self.graph.edge(node_id,statements_id)
         return node_id
 
     def visualize(self):
         self.visit(self.parser.parse())
-        self.graph.render('test-output/round-table.gv',view=True)
-
+        self.graph.render('test-output/round-table.gv', view=True)
