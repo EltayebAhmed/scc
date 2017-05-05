@@ -32,7 +32,7 @@ class Parser:
             self.error()
 
     def factor(self):
-        """factor :(PLUS|MINUS)factor | INTEGER | funccall | LPAREN expression RPAREN"""
+        """factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | LPAREN expression RPAREN"""
         token = self.current_token
         if token.type == PLUS:
             self.eat(PLUS)
@@ -50,6 +50,8 @@ class Parser:
             node = self.expression()
             self.eat(RPAREN)
             return node
+        elif token.type == STRING:
+            return self.constant_string()
         else:
             return self.funccall()
 
@@ -202,6 +204,8 @@ RPAREN statement"""
             statement = self.for_statement()
         elif self.current_token == SWITCH:
             statement = self.switch_statement()
+        elif self.current_token.type == STRING:
+            statement = self.constant_string();
 
         else:
             self.error()
@@ -289,6 +293,10 @@ RPAREN statement"""
         case = CaseStatement(switch_expr, case_expr, case_statements_node)
         return case
 
+    def constant_string(self):
+        string = self.current_token.value
+        self.eat(STRING)
+        return ConstantString(string)
 
 
     def parse(self):

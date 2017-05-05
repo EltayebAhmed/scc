@@ -7,23 +7,14 @@ void main(){
     printf(3--3*4);
 
 
-
-    switch(1){
-    case 1:
-        break;
-    case 2:
-        print(2);
-    default:
-        break;
-    }
-
+    printf("Hello world");
 
     return;
 }
 """
 code = """
 void main(){
-    printf(3--3*4);
+    printf("ABC%d",(3+5)*12);
 }
 """
 

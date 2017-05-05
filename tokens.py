@@ -29,12 +29,16 @@ OPENCURLY = TokenType("OPENCURLY{")
 CLOSE_CURLY = TokenType("CLOSECURLY}")
 SEMICOLON = TokenType("SEMICOLON;")
 COMA = TokenType("COMA,")
+DOUBLE_QUOTE = TokenType("D_QUOTE")
+CHAR = TokenType("CHAR")
+ESCAPED_CHAR = TokenType("ESCAPED_CHAR")
 PLUS = TokenType("PLUS+")
 MINUS = TokenType("MINUS-")
 MUL= TokenType("MUL*")
 INT_DIV= TokenType("INT_DIV//")
 EOF = TokenType("EOF")
 COLON = TokenType("COLON")
+STRING = TokenType("STRING")
 
 __WHILE = TokenType("WHILE")
 WHILE = Token(__WHILE, "WHILE")
@@ -50,6 +54,8 @@ DEFAULT = Token(__DEFAULT, "DEFAULT")
 
 __FOR = TokenType("FOR")
 FOR = Token(__FOR, "FOR")
+
+
 
 ID = TokenType("ID")
 INTEGER = TokenType("INTEGER")

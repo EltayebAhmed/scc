@@ -28,6 +28,7 @@ class Compiler(NodeVisitor):
         self.parser = parser
         self.stack_pos = 0  # This will become an object later
         self.loop_switch_stack = LoopSwitchStack()
+        self.strings = []
 
     def compile(self):
         head = self.parser.parse()
@@ -61,7 +62,7 @@ class Compiler(NodeVisitor):
             code += self.visit(parameter)
 
         code += "call %s\n" % ("_" + node.callee_name)
-        code += "add esp, %i\n" % (old_stack_pos-self.stack_pos)
+        code += "add esp, %i\n" % (old_stack_pos - self.stack_pos)
         self.stack_pos = old_stack_pos
         return code
 
@@ -137,12 +138,15 @@ mov ebp, esp\n"""
 
     def visit_Program(self, node):
         # remove extern printf when the Symbol Resource Table Arrives
-        code = """"global _main
-extern _printf
-section .text\n"""
+        code = "section .text\nglobal _main\nextern _printf\n"
         for func in node.functions:
             code += self.visit(func)
-        return code
+
+        final_code = "section .data\n"
+        for string in self.strings:
+            final_code += string+"\n"
+        final_code += code
+        return final_code
 
     def visit_ExplicitConstant(self, node):
 
@@ -166,7 +170,7 @@ section .text\n"""
         self.loop_switch_stack.exit_item(node)
         return code
 
-    def visit_CaseStatement(self,node):
+    def visit_CaseStatement(self, node):
         code = ""
         end_case_label = "end_case_" + str(id(node))
         code += self.visit(node.switch_expr)
@@ -193,6 +197,14 @@ section .text\n"""
         self.loop_switch_stack.exit_item(node)
 
         return code
+
+    def visit_ConstantString(self, node):
+        code = ""
+        code += node.name + ' : db "' + node.string + '",0'
+        assert ('\n' not in node.string)  # we do not support escapc chars yet </3
+        self.strings.append(code)
+        self.stack_pos-=4
+        return "push %s\n" % node.name
 
     def visit_BreakStatement(self, node):
         top_item = self.loop_switch_stack.get_top_loop_switch()

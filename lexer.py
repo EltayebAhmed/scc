@@ -110,6 +110,9 @@ class Lexer(object):
                 else:
                     self.error()
 
+            if self.current_char == '"':
+                return self.string()
+
             if self.current_char == ":":
                 self.advance()
                 return Token(COLON, ":")
@@ -117,9 +120,20 @@ class Lexer(object):
 
         return Token(EOF, None)
 
+
+
     def peek_token(self):
         """This function return the next toke without changing the lexers state (without changing the current token)"""
         old_pos, old_char = self.pos, self.current_char
         token = self.get_next_token()
         self.pos, self.current_char = old_pos, old_char
         return token
+
+    def string(self):
+        self.advance()
+        result = ""
+        while self.current_char != '"':
+            result += self.current_char
+            self.advance()
+        self.advance()
+        return Token(STRING, result)

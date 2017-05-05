@@ -88,6 +88,12 @@ class ExplicitConstant(ASTNode):
         self.type = type_
 
 
+class ConstantString(ASTNode):
+    def __init__(self, string):
+        self.name = "string_" + str(id(self))
+        self.string = string
+
+
 class Return(ASTNode):
     def __init__(self):
         # Only hadling void returns for now
