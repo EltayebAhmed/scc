@@ -120,24 +120,7 @@ class Lexer(object):
 
         return Token(EOF, None)
 
-    def next_char_token(self):
-        """Returns the next char token and advance pointer (for use while lexing and parsing strings)"""
-        if self.current_char is None:
-            raise Exception("END OF TEXT")
 
-        elif self.current_char == '\\':
-            # The escaped characters
-            if self.peek() == 'n':
-                self.advance()
-                self.advance()
-                return Token(ESCAPED_CHAR, "n")
-            else:
-                # Unrecognized escaped character
-                self.error()
-        else:
-            char = self.current_char
-            self.advance()
-            return Token(CHAR, char)
 
     def peek_token(self):
         """This function return the next toke without changing the lexers state (without changing the current token)"""
