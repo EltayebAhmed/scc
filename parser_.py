@@ -31,6 +31,57 @@ class Parser:
         else:
             self.error()
 
+    def factor(self):
+        """factor :(PLUS|MINUS)factor | INTEGER | funccall | LPAREN expression RPAREN"""
+        token = self.current_token
+        if token.type == PLUS:
+            self.eat(PLUS)
+            node = UnaryOp(token, self.factor())
+            return node
+        elif token.type == MINUS:
+            self.eat(MINUS)
+            node = UnaryOp(token, self.factor())
+            return node
+        elif token.type == INTEGER:
+            self.eat(INTEGER)
+            return ExplicitConstant(token.value,INT)
+        elif token.type == LPAREN:
+            self.eat(LPAREN)
+            node = self.expression()
+            self.eat(RPAREN)
+            return node
+        else:
+            return self.funccall()
+
+    def term(self):
+        """term : factor ((MUL | INT_DIV) factor)*"""
+        node = self.factor()
+
+        while self.current_token.type in (MUL, INT_DIV):
+            token = self.current_token
+            if token.type == MUL:
+                self.eat(MUL)
+            elif token.type == INT_DIV:
+                self.eat(INT_DIV)
+            node = BinOp(left=node, op=token, right=self.factor())
+
+        return node
+
+
+    def expression(self):
+        """expr   : term ((PLUS | MINUS) term)*
+        """
+        node = self.term()
+
+        while self.current_token.type in (PLUS, MINUS):
+            token = self.current_token
+            if token.type == PLUS:
+                self.eat(PLUS)
+            elif token.type == MINUS:
+                self.eat(MINUS)
+            node = BinOp(left=node, op=token, right=self.term())
+        return node
+
     def ret_type(self):
         """VOID"""
         if self.current_token == VOID:
@@ -118,8 +169,11 @@ RPAREN statement"""
             | (RETURN SEMICOLON)
             | scope_block
             | SEMICOLON
+            | ifstatement
             | while_statement
-            | ifstatement"""
+            | (BREAK SEMICOLON)
+            | for_statement
+            | switch_statement"""
 
         if self.current_token.type == ID:
             statement = self.funccall()
@@ -221,6 +275,7 @@ RPAREN statement"""
         return switch_node
 
     def case_statement(self, switch_expr):
+        """case_statement : CASE expression COLON statement*"""
         self.eat(CASE.type)
 
         case_expr = self.expression()
@@ -234,17 +289,7 @@ RPAREN statement"""
         case = CaseStatement(switch_expr, case_expr, case_statements_node)
         return case
 
-    def expression(self):
-        """expression: INTEGER | funcall"""
-        # At some point it might be a good idea to create an expression ASTNode and
-        # wrap all nodes instatiated her by it
-        token = self.current_token
-        if self.current_token.type == INTEGER:
-            self.eat(INTEGER)
 
-            return ExplicitConstant(token.value, INT)  # remove string
-        else:
-            return self.funccall()
 
     def parse(self):
         """"

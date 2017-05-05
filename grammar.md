@@ -5,7 +5,7 @@ This file is contains all the currently implemented grammar.
 %tokens LPAREN RPAREN OPENCURLY CLOSECURLY SEMICOLON COMA EOF WHILE BREAK SWITCH CASE COLON DEFAULT
 %tokens VOID
 %tokens RETURN
-%tokens INTEGER ID
+%tokens INTEGER ID PLUS MINUS MUL DIV
 
 
 *tokens IF ELSE WHILE BREAK
@@ -35,12 +35,12 @@ RPAREN statement
 
 switch_statement : SWITCH LPAREN expression RPAREN OPENCURLY case_statement* (DEFAULT COLON statement*)? CLOSECURLY
 
-case_statement = CASE expression COLON statement*
+case_statement : CASE expression COLON statement*
 
 ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?
 
+
 funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN
-
-expression: INTEGER | funccall
-
-
+expression   : term ((PLUS | MINUS) term)*
+term   : factor ((MUL | DIV) factor)*
+factor :(PLUS|MINUS)factor | INTEGER | funccall | LPAREN expression RPAREN

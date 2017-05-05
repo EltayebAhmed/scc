@@ -30,7 +30,6 @@ class Visualizer(NodeVisitor):
         return node_id
 
     def visit_ScopeBlock(self, node):
-        # later scoping will be handled here as well
         node_id = str(id(node))
 
         self.graph.node(node_id, "Scope block")
@@ -50,6 +49,22 @@ class Visualizer(NodeVisitor):
 
         self.graph.edge(node_id, b_id)
         return node_id
+
+    def visit_BinOp(self, node):
+        node_id = str(id(node))
+        self.graph.node(node_id, node.op.value)
+        left_id = self.visit(node.left)
+        right_id = self.visit(node.right)
+        self.graph.edge(node_id, left_id)
+        self.graph.edge(node_id, right_id)
+        return node_id
+    def visit_UnaryOp(self, node):
+        node_id = str(id(node))
+        self.graph.node(node_id, node.op.value)
+        exp_id = self.visit(node.expression)
+        self.graph.edge(node_id, exp_id)
+        return node_id
+
 
     def visit_Return(self, node):
         node_id = str(id(node))
