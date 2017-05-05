@@ -1,6 +1,7 @@
 from ast.core import NodeVisitor, ExplicitConstant, WhileStatement, SwitchStatement
 from tokens import INT
 
+from tokens import *
 
 class LoopSwitchStack:
     def __init__(self):
@@ -92,6 +93,40 @@ mov ebp, esp\n"""
         code += self.visit(node.body)
         code += "pop ebp\nret\n"
         self.stack_pos += 4
+
+        return code
+
+    def visit_BinOp(self, node):
+        code = ""
+        code += self.visit(node.left)
+        code += self.visit(node.right)
+        code += "pop eax\n"
+        code += "pop ebx\n"
+        if node.op.type == PLUS:
+            code+=  "add eax, ebx\n"
+            code += "push eax\n"
+        elif node.op.type == MINUS:
+            code += "sub eax, ebx\n"
+            code += "push eax\n"
+        elif node.op.type == MUL:
+            code += "mul ebx\n"
+            code += "push eax\n"
+        elif node.op.type == INT_DIV:
+            code += "xor edx, edx\n"
+            code += "div ebx\n"
+            code += "push eax\n"
+        self.stack_pos += 4
+        return code
+
+    def visit_UnaryOp(self, node):
+        code = ""
+        op = node.op.type
+        if op == PLUS:
+            code += self.visit(node.expression)
+
+        elif op == MINUS:
+            code += self.visit(node.expression)
+            code += "pop eax\nmov ebx, -1\n Mul ebx\npush eax\n"
 
         return code
 
