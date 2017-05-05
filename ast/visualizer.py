@@ -142,6 +142,10 @@ class Visualizer(NodeVisitor):
     def visit_CaseStatement(self, node):
         node_id = str(id(node))
         self.graph.node(node_id, "case")
+
+        switch_expr_id = self.visit(node.switch_expr)
+        self.graph.edge(node_id, switch_expr_id)
+
         expression_id = self.visit(node.expression)
         self.graph.edge(node_id,expression_id)
         statements_id = self.visit(node.statements)

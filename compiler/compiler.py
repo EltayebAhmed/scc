@@ -150,19 +150,6 @@ section .text\n"""
         code = ""
         end_switch_label = "end_switch_" + str(id(node))
         code += self.visit(node.cases)
-
-        # for case in node.cases.nodes:
-        #     end_case_label = "end_case_" + str(id(case))
-        #     code += self.visit(node.expression)
-        #     code += self.visit(case.nodes[0])
-        #     code += "pop eax\n"
-        #     code += "cmp eax,[esp]\n"
-        #     code += "add esp,4\n"
-        #     code += "jne " + end_case_label + "\n"
-        #     self.stack_pos += 8
-        #     code += self.visit(case.nodes[1])
-        #     code += end_case_label + ":\n"
-
         if node.default is not None:
             code += self.visit(node.default)
 
