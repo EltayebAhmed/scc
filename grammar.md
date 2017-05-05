@@ -33,6 +33,6 @@ ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?
 
 funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN
 
-expression: INTEGER | funccall
+expression: INTEGER | funccall | string
 
-
+string : DOUBLE_QUOTE (CHAR | ESCAPED_CHAR)* DOUBLE_QUOTE

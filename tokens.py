@@ -25,6 +25,9 @@ OPENCURLY = TokenType("OPENCURLY{")
 CLOSE_CURLY = TokenType("CLOSECURLY}")
 SEMICOLON = TokenType("SEMICOLON;")
 COMA = TokenType("COMA,")
+DOUBLE_QUOTE = TokenType("D_QUOTE")
+CHAR = TokenType("CHAR")
+ESCAPED_CHAR = TokenType("ESCAPED_CHAR")
 EOF = TokenType("EOF")
 
 
