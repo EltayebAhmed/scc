@@ -40,6 +40,7 @@ class Compiler(NodeVisitor):
         code += "pop eax\n"
         code += "cmp eax,0\n";
         code += "jz " + endiflabel + "\n"
+        self.stack_pos += 4
         code += self.visit(node.body)
 
         if (node.elsebody is not None):
@@ -85,12 +86,19 @@ class Compiler(NodeVisitor):
         code = "_%s: \n" % node.name
         code += """push ebp
 mov ebp, esp\n"""
+        self.stack_pos -= 4
+
         code += self.visit(node.body)
         code += "pop ebp\nret\n"
+        self.stack_pos += 4
+
         return code
 
     def visit_Return(self, node):
-        return "pop ebp\nret\n"
+        code = "pop ebp\nret\n"
+        self.stack_pos += 4
+
+        return code
 
     def visit_Program(self, node):
         # remove extern printf when the Symbol Resource Table Arrives
@@ -104,7 +112,7 @@ section .text\n"""
     def visit_ExplicitConstant(self, node):
 
         if node.type == INT:
-            self.stack_pos += 4
+            self.stack_pos -= 4
             return "push %i\n" % (node.value)
 
     def visit_WhileStatement(self, node):
@@ -116,6 +124,7 @@ section .text\n"""
         code += self.visit(node.expression)
         code += "pop eax\ncmp eax,0\n"
         code += "jz " + end_label + '\n'
+        self.stack_pos += 4
         code += self.visit(node.block)
         code += "\njmp " + start_label + '\n'
         code += end_label + ":\n"
@@ -127,15 +136,16 @@ section .text\n"""
         code = ""
         end_switch_label = "end_switch_" + str(id(node))
         for case in node.cases.nodes:
-            end_case_label = "end_case_"+str(id(case))
+            end_case_label = "end_case_" + str(id(case))
             code += self.visit(node.expression)
             code += self.visit(case.nodes[0])
             code += "pop eax\n"
             code += "cmp eax,[esp]\n"
             code += "add esp,4\n"
             code += "jne " + end_case_label + "\n"
+            self.stack_pos += 8
             code += self.visit(case.nodes[1])
-            code += end_case_label+":\n"
+            code += end_case_label + ":\n"
 
         if node.default is not None:
             code += self.visit(node.default)

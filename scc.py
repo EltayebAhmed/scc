@@ -29,6 +29,6 @@ viz = Visualizer(parser=parser2)
 
 
 print(comp.compile())
-#viz.visualize()
+viz.visualize()
 
 
