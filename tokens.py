@@ -19,6 +19,8 @@ class Token:
     __repr__ = __str__
 
 
+#
+
 LPAREN = TokenType("LPARAN(")
 RPAREN = TokenType("RPARAN)")
 OPENCURLY = TokenType("OPENCURLY{")
@@ -29,16 +31,28 @@ DOUBLE_QUOTE = TokenType("D_QUOTE")
 CHAR = TokenType("CHAR")
 ESCAPED_CHAR = TokenType("ESCAPED_CHAR")
 EOF = TokenType("EOF")
-
+COLON = TokenType("COLON")
 
 __WHILE = TokenType("WHILE")
 WHILE = Token(__WHILE, "WHILE")
+
+__SWITCH = TokenType("SWITCH")
+SWITCH = Token(__SWITCH, "SWITCH")
+
+__CASE = TokenType("CASE")
+CASE = Token(__CASE, "CASE")
+
+__DEFAULT = TokenType("DEFAULT")
+DEFAULT = Token(__DEFAULT, "DEFAULT")
+
+__FOR = TokenType("FOR")
+FOR = Token(__FOR, "FOR")
 
 ID = TokenType("ID")
 INTEGER = TokenType("INTEGER")
 
 __BREAK = TokenType("BREAK")
-BREAK = Token(__BREAK,__BREAK)
+BREAK = Token(__BREAK, __BREAK)
 
 __VOID = TokenType("VOID")  # Keywords will have single token instances, the token type will not be used
 VOID = Token(__VOID, 'VOID')
@@ -47,31 +61,30 @@ __RETURN = TokenType("RETURN")
 RETURN = Token(__RETURN, "RETURN")
 
 __IF = TokenType("IF")
-IF = Token(__IF,"IF")
+IF = Token(__IF, "IF")
 
 __ELSE = TokenType("ELSE")
-ELSE = Token(__ELSE,"ELSE")
+ELSE = Token(__ELSE, "ELSE")
 
 __BREAK = TokenType("BREAK")
-BREAK = Token(__BREAK,"BREAK")
+BREAK = Token(__BREAK, "BREAK")
 
 ID = TokenType("ID")
 
 __INT = TokenType("INT")
 INT = Token(__INT, "INT")
 
-
 INTEGER = TokenType("INTEGER")
 
-
-
-KEYWORDS  = {'void': VOID,
-             'return': RETURN,
-             'if': IF,
-             'else': ELSE,
-             'int': INT,
-             'while': WHILE,
-             'break': BREAK
-             }
-
-
+KEYWORDS = {'void': VOID,
+            'return': RETURN,
+            'if': IF,
+            'else': ELSE,
+            'int': INT,
+            'while': WHILE,
+            'break': BREAK,
+            'for': FOR,
+            'switch': SWITCH,
+            'case': CASE,
+            'default': DEFAULT
+            }

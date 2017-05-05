@@ -5,20 +5,17 @@ from compiler.compiler import Compiler
 code = """
 void main(){
 
-    if(1){
-    print(2);
-    }else if(2){
-    print(3);
-    while(1){
+
+    switch(1){
+    case 1:
+        break;
+    case 2:
+        print(2);
+    default:
         break;
     }
-    }
-    printf(12,15);
 
-    while(1){
-        break;
 
-    }
     return;
 }
 """
