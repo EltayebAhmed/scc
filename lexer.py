@@ -1,4 +1,6 @@
 from tokens import *
+
+
 class Lexer(object):
     def __init__(self, text):
         # client string input, e.g. "4 + 2 * 3 - 6 / 2"
@@ -37,13 +39,13 @@ class Lexer(object):
             self.advance()
         token = KEYWORDS.get(result, Token(ID, result))
         return token
+
     def number(self):
         """Return a (multidigit) integer or float consumed from the input."""
         result = ''
         while self.current_char is not None and self.current_char.isdigit():
             result += self.current_char
             self.advance()
-
 
         token = Token(INTEGER, int(result))
         return token
@@ -59,11 +61,8 @@ class Lexer(object):
                 self.skip_whitespace()
                 continue
 
-
             if self.current_char.isalpha():
                 return self._id()
-
-
 
             if self.current_char == '(':
                 self.advance()
@@ -111,6 +110,9 @@ class Lexer(object):
                 else:
                     self.error()
 
+            if self.current_char == ":":
+                self.advance()
+                return Token(COLON, ":")
             self.error()
 
         return Token(EOF, None)

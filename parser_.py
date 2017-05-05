@@ -32,7 +32,7 @@ class Parser:
             self.error()
 
     def factor(self):
-        """factor : INTEGER"""
+        """factor :(PLUS|MINUS)factor | INTEGER | funccall | LPAREN expression RPAREN"""
         token = self.current_token
         if token.type == PLUS:
             self.eat(PLUS)
@@ -50,6 +50,8 @@ class Parser:
             node = self.expression()
             self.eat(RPAREN)
             return node
+        else:
+            return self.funccall()
 
     def term(self):
         """term : factor ((MUL | INT_DIV) factor)*"""
@@ -67,14 +69,7 @@ class Parser:
 
 
     def expression(self):
-        """Arithmetic expression parser / interpreter.
-
-        calc>  14 + 2 * 3 - 6 / 2
-        17
-
-        expr   : term ((PLUS | MINUS) term)*
-        term   : factor ((MUL | INT_DIV) factor)*
-        factor : INTEGER
+        """expr   : term ((PLUS | MINUS) term)*
         """
         node = self.term()
 
@@ -123,7 +118,6 @@ class Parser:
         self.eat(CLOSE_CURLY)
         return ScopeBlock(statements)
 
-
     def while_statement(self):
         """while_statement : WHILE LPAREN expression RPAREN statement"""
         self.eat(WHILE.type)
@@ -133,14 +127,53 @@ class Parser:
         block = self.scope_block()
         return WhileStatement(expression, block)
 
+    def for_statement(self):
+        """for_statement : FOR LPAREN expression (COMA expression)* SEMICOLON expression SEMICOLON expression (COMA expression)*
+RPAREN statement"""
+        self.eat(FOR.type)
+        self.eat(LPAREN)
+        initializer = self.expression()
+        initializers = [initializer]
+
+        while self.current_token == COMA:
+            self.eat(COMA)
+            initializers.append(self.expression())
+
+        self.eat(SEMICOLON)
+        condition = self.expression()
+
+        self.eat(SEMICOLON)
+        increment = self.expression()
+        increments = [increment]
+        while self.current_token == COMA:
+            self.eat(COMA)
+            increments.append(self.expression())
+
+        self.eat(RPAREN)
+
+        initializers_nodes = MultiNode(initializers, "initializers")
+
+        statement = self.statement()
+
+        increments_node = MultiNode(increments, "increments")
+        mul_node = MultiNode([statement, increments_node], "body")
+
+        _while = WhileStatement(condition, mul_node)
+
+        result = MultiNode([initializers_nodes, _while], "For loop")
+
+        return result
 
     def statement(self):
         """statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
             | SEMICOLON
+            | ifstatement
             | while_statement
-            | ifstatement"""
+            | (BREAK SEMICOLON)
+            | for_statement
+            | switch_statement"""
 
         if self.current_token.type == ID:
             statement = self.funccall()
@@ -165,6 +198,10 @@ class Parser:
             statement = self.while_statement()
         elif self.current_token == BREAK:
             statement = self.break_statement()
+        elif self.current_token == FOR:
+            statement = self.for_statement()
+        elif self.current_token == SWITCH:
+            statement = self.switch_statement()
 
         else:
             self.error()
@@ -198,7 +235,59 @@ class Parser:
             return IfStatement(expression, body, elsebody)
         return IfStatement(expression, body)
 
+    def switch_statement(self):
+        """
+        switch_statement :
+         SWITCH LPAREN expression RPAREN
+          OPENCURLY
+           case_statement*
+           (DEFAULT COLON statement*)?
+          CLOSECURLY
 
+        """
+
+        self.eat(SWITCH.type)
+        self.eat(LPAREN)
+        expression = self.expression()
+        self.eat(RPAREN)
+        self.eat(OPENCURLY)
+        cases = []
+        while self.current_token == CASE:
+            case = self.case_statement(expression)
+            cases.append(case)
+
+        cases_node = MultiNode(cases, "Cases")
+        if self.current_token == DEFAULT:
+            default_statements = []
+            self.eat(DEFAULT.type)
+            self.eat(COLON)
+
+            while self.current_token.type != CLOSE_CURLY:
+                default_statements.append(self.statement())
+
+            default_node = MultiNode(default_statements, "default")
+            switch_node = SwitchStatement(expression, cases_node, default_node)
+
+        else:
+            switch_node = SwitchStatement(expression, cases_node)
+
+        self.eat(CLOSE_CURLY)
+        return switch_node
+
+    def case_statement(self, switch_expr):
+        """case_statement : CASE expression COLON statement*"""
+        self.eat(CASE.type)
+
+        case_expr = self.expression()
+        self.eat(COLON)
+        case_statements = []
+
+        while self.current_token != CASE and self.current_token != DEFAULT and self.current_token != CLOSE_CURLY:
+            case_statements.append(self.statement())
+
+        case_statements_node = MultiNode(case_statements, "statement")
+        case = CaseStatement(switch_expr, case_expr, case_statements_node)
+        return case
 
 
 

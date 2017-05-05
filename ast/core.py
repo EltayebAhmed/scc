@@ -23,8 +23,10 @@ class FunctionDefinition(ASTNode):
 
 
 class MultiNode(ASTNode):
-    def __init__(self, nodes):
+    def __init__(self, nodes, name):
+        """This class accepts a list of nodes "nodes" and instatiates a MetaNode"""
         self.nodes = nodes  # list of statements
+        self.name = "MultiNode :" + name
 
 
 class ScopeBlock(ASTNode):
@@ -91,16 +93,32 @@ class Return(ASTNode):
         # Only hadling void returns for now
         pass
 
+
 class IfStatement(ASTNode):
-    def __init__(self,expression,body,elsebody = None):
+    def __init__(self, expression, body, elsebody=None):
         self.expression = expression
         self.body = body
         self.elsebody = elsebody
+
 
 class WhileStatement(ASTNode):
     def __init__(self, expression, block):
         self.expression = expression
         self.block = block
+
+
+class SwitchStatement(ASTNode):
+    def __init__(self, expression, cases, default=None):
+        self.expression = expression
+        self.cases = cases
+        self.default = default
+
+
+class CaseStatement(ASTNode):
+    def __init__(self, switch_expr, expression, statements):
+        self.switch_expr = switch_expr
+        self.expression = expression
+        self.statements = statements
 
 
 class BreakStatement(ASTNode):
