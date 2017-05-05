@@ -10,6 +10,7 @@ class Visualizer(NodeVisitor):
     def visit(self, node):
         method_name = 'visit_' + type(node).__name__
         visitor = getattr(self, method_name, self.generic_visit)
+        print(method_name)
         return visitor(node)
 
     def visit_FunctionCall(self, node):
@@ -112,7 +113,21 @@ class Visualizer(NodeVisitor):
         self.graph.node(node_id,"BREAK")
         return node_id
 
+    def visit_MultiNode(self, node):
+        node_id = str(id(node))
+        self.graph.node(node_id,node.name)
+        sub_nodes = []
+        for sub_node in node.nodes:
+            sub_nodes.append(self.visit(sub_node))
+
+        for sub_node in sub_nodes:
+            self.graph.edge(node_id,sub_node)
+
+        return node_id
+
+
     def visualize(self):
         self.visit(self.parser.parse())
         self.graph.render('test-output/round-table.gv',view=True)
+
 

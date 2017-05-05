@@ -2,7 +2,7 @@
 
 This file is contains all the currently implemented grammar.
 
-%tokens LPAREN RPAREN OPENCURLY CLOSECURLY SEMICOLON COMA EOF WHILE
+%tokens LPAREN RPAREN OPENCURLY CLOSECURLY SEMICOLON COMA EOF WHILE BREAK
 %tokens VOID
 %tokens RETURN
 %tokens INTEGER ID
@@ -27,6 +27,9 @@ statement : (funccall SEMICOLON)
             | (BREAK SEMICOLON)
 
 while_statement : WHILE LPAREN expression RPAREN statement
+
+for_statement : FOR LPAREN expression (COMA expression)* SEMICOLON expression SEMICOLON expression (COMA expression)*
+RPAREN statement
 
 
 ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?

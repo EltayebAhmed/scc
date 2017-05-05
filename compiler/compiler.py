@@ -1,4 +1,4 @@
-from ast.core import NodeVisitor, ExplicitConstant, WhileStatement
+from ast.core import NodeVisitor, ExplicitConstant, WhileStatement, MultiNode
 from tokens import INT
 
 
@@ -7,7 +7,7 @@ class LoopSwitchStack:
         self._items = []
 
     def add_item(self, item):
-        assert (isinstance(item, WhileStatement))
+        assert (isinstance(item, WhileStatement) )
         self._items.append(item)
 
     def exit_item(self, item):
@@ -39,17 +39,17 @@ class Compiler(NodeVisitor):
         code += self.visit(node.expression)
         code += "pop eax\n"
         code += "cmp eax,0\n";
-        code += "jz "+endiflabel + "\n"
-        code+= self.visit(node.body)
+        code += "jz " + endiflabel + "\n"
+        code += self.visit(node.body)
 
         if (node.elsebody is not None):
-            code+= "jmp "+ endelselabel + "\n"
+            code += "jmp " + endelselabel + "\n"
 
         code += endiflabel + ":\n"
 
-        if(node.elsebody is not None):
+        if (node.elsebody is not None):
             code += self.visit(node.elsebody)
-            code += endelselabel +":\n"
+            code += endelselabel + ":\n"
         return code
 
     def visit_FunctionCall(self, node):
@@ -122,7 +122,9 @@ section .text\n"""
         self.loop_switch_stack.exit_item(node)
         return code
 
-    def visit_BreakStatement(self,node):
+
+
+    def visit_BreakStatement(self, node):
         top_item = self.loop_switch_stack.get_top_loop_switch()
-        code = "jmp __while_label_end"+str(id(top_item)) + ":\n"
+        code = "jmp __while_label_end" + str(id(top_item)) + ":\n"
         return code

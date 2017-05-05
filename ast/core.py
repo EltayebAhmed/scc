@@ -23,8 +23,10 @@ class FunctionDefinition(ASTNode):
 
 
 class MultiNode(ASTNode):
-    def __init__(self, nodes):
+    def __init__(self, nodes,name):
+        """This class accepts a list of nodes "nodes" and instatiates a MetaNode"""
         self.nodes = nodes  # list of statements
+        self.name = name
 
 
 class ScopeBlock(ASTNode):
@@ -91,6 +93,8 @@ class WhileStatement(ASTNode):
     def __init__(self, expression, block):
         self.expression = expression
         self.block = block
+
+
 
 
 class BreakStatement(ASTNode):

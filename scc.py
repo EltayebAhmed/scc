@@ -5,20 +5,11 @@ from compiler.compiler import Compiler
 code = """
 void main(){
 
-    if(1){
-    print(2);
-    }else if(2){
-    print(3);
-    while(1){
-        break;
-    }
-    }
-    printf(12,15);
 
-    while(1){
-        break;
-
+    for(1;1;1){
     }
+
+
     return;
 }
 """
@@ -32,6 +23,6 @@ viz = Visualizer(parser=parser2)
 
 
 print(comp.compile())
-viz.visualize()
+#viz.visualize()
 
 

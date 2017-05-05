@@ -67,7 +67,6 @@ class Parser:
         self.eat(CLOSE_CURLY)
         return ScopeBlock(statements)
 
-
     def while_statement(self):
         """while_statement : WHILE LPAREN expression RPAREN statement"""
         self.eat(WHILE.type)
@@ -77,6 +76,42 @@ class Parser:
         block = self.scope_block()
         return WhileStatement(expression, block)
 
+    def for_statement(self):
+        """for_statement : FOR LPAREN expression (COMA expression)* SEMICOLON expression SEMICOLON expression (COMA expression)*
+RPAREN statement"""
+        self.eat(FOR.type)
+        self.eat(LPAREN)
+        initializer = self.expression()
+        initializers = [initializer]
+
+        while self.current_token == COMA:
+            self.eat(COMA)
+            initializers.append(self.expression())
+
+        self.eat(SEMICOLON)
+        condition = self.expression()
+
+        self.eat(SEMICOLON)
+        increment = self.expression()
+        increments = [increment]
+        while self.current_token == COMA:
+            self.eat(COMA)
+            increments.append(self.expression())
+
+        self.eat(RPAREN)
+
+        initializers_nodes = MultiNode(initializers, "initializers")
+
+        statement = self.statement()
+
+        increments_node = MultiNode(increments, "increments")
+        mul_node = MultiNode([statement, increments_node], "body")
+
+        _while = WhileStatement(condition, mul_node)
+
+        result = MultiNode([initializers_nodes, _while], "For loop")
+
+        return result
 
     def statement(self):
         """statement : (funccall SEMICOLON)
@@ -109,6 +144,8 @@ class Parser:
             statement = self.while_statement()
         elif self.current_token == BREAK:
             statement = self.break_statement()
+        elif self.current_token == FOR:
+            statement = self.for_statement()
 
         else:
             self.error()
@@ -142,7 +179,6 @@ class Parser:
             return IfStatement(expression, body, elsebody)
         return IfStatement(expression, body)
 
-
     def expression(self):
         """expression: INTEGER | funcall"""
         # At some point it might be a good idea to create an expression ASTNode and
@@ -151,7 +187,7 @@ class Parser:
         if self.current_token.type == INTEGER:
             self.eat(INTEGER)
 
-            return ExplicitConstant(token.value, INT) # remove string
+            return ExplicitConstant(token.value, INT)  # remove string
         else:
             return self.funccall()
 
