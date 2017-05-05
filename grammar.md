@@ -2,11 +2,13 @@
 
 This file is contains all the currently implemented grammar.
 
-%tokens LPAREN RPAREN OPENCURLY CLOSECURLY SEMICOLON COMA EQUALS EOF
+%tokens LPAREN RPAREN OPENCURLY CLOSECURLY SEMICOLON COMA EQUALS EOF WHILE
 %tokens VOID INT
 %tokens RETURN
 %tokens INTEGER ID
 
+
+*tokens IF ELSE WHILE BREAK
 
 ret_type: VOID
 
@@ -22,8 +24,13 @@ statement : (funccall SEMICOLON)
             | (var_assignment SEMICOLON)
             | (var_decl SEMICOLON)
             | SEMICOLON
+            | ifstatement
+            | while_statement
+            | (BREAK SEMICOLON)
 
+while_statement : WHILE LPAREN expression RPAREN statement
 
+ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?
 
 funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN
 

@@ -98,12 +98,48 @@ class Visualizer(NodeVisitor):
         for func_id in functions:
             self.graph.edge(node_id, func_id)
         return node_id
+
     def visit_ExplicitConstant(self,node):
         node_id = str(id(node))
         self.graph.node(node_id, str(node.value))
 
         return node_id
 
+    def visit_IfStatement(self, node):
+        node_id = str(id(node))
+        self.graph.node(node_id, 'IF')
+        expr = self.visit(node.expression)
+        bod = self.visit(node.body)
+        else_bod = None
+        if node.elsebody is not None:
+            else_bod = self.visit(node.elsebody)
+
+        self.graph.edge(node_id, expr)
+        self.graph.edge(node_id, bod)
+        if else_bod is not None:
+            self.graph.edge(node_id, else_bod)
+        return node_id
+
+    def visit_WhileStatement(self,node):
+        node_id = str(id(node))
+        self.graph.node(node_id,"WHILE")
+        expr = node.expression
+        block = node.block
+
+        expr_id = self.visit(expr)
+        block_id = self.visit(block)
+
+        self.graph.edge(node_id,expr_id)
+        self.graph.edge(node_id,block_id)
+
+        return node_id
+
+    def visit_BreakStatement(self,node):
+        node_id = str(id(node))
+        self.graph.node(node_id,"BREAK")
+        return node_id
+
     def visualize(self):
         self.visit(self.parser.parse())
         self.graph.render('test-output/round-table.gv',view=True)
+

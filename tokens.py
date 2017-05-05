@@ -6,16 +6,18 @@ from cookbook import Enum
 class TokenType(Enum):
     pass
 
+
 class Token:
     def __init__(self, type_, value):
-        assert (isinstance(type_,TokenType))
+        assert (isinstance(type_, TokenType))
         self.type = type_
         self.value = value
 
     def __str__(self):
-        return "<Token, %s: %s>" %(self.type.name, self.value)
+        return "<Token, %s: %s>" % (self.type.name, self.value)
 
     __repr__ = __str__
+
 
 LPAREN = TokenType("LPARAN(")
 RPAREN = TokenType("RPARAN)")
@@ -29,6 +31,14 @@ EOF = TokenType("EOF")
 ID = TokenType("ID")
 INTEGER = TokenType("INTEGER")
 
+
+__WHILE = TokenType("WHILE")
+WHILE = Token(__WHILE, "WHILE")
+
+
+__BREAK = TokenType("BREAK")
+BREAK = Token(__BREAK,__BREAK)
+
 __VOID = TokenType("VOID")  # Keywords will have single token instances, the token type will not be used
 VOID = Token(__VOID, 'VOID')
 
@@ -38,8 +48,18 @@ RETURN = Token(__RETURN, "RETURN")
 __INT = TokenType("INT")
 INT = Token(__INT, "INT")
 
+__IF = TokenType("IF")
+IF = Token(__IF,"IF")
+
+__ELSE = TokenType("ELSE")
+ELSE = Token(__ELSE,"ELSE")
 
 
 KEYWORDS  = {'void': VOID,
-              'return': RETURN,
-              'int': INT}
+             'return': RETURN,
+             'if': IF,
+             'else': ELSE,
+             'int': INT,
+             'while': WHILE,
+             'break': BREAK
+             }

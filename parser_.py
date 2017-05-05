@@ -58,7 +58,6 @@ class Parser:
         body = self.scope_block()
         return FunctionDefinition(ret_type, name, body)
 
-
     def scope_block(self):
         """scope_block: OPENCURLY (statement)* CLOSECURLY"""
         statements = []
@@ -68,13 +67,26 @@ class Parser:
         self.eat(CLOSE_CURLY)
         return ScopeBlock(statements)
 
+
+    def while_statement(self):
+        """while_statement : WHILE LPAREN expression RPAREN statement"""
+        self.eat(WHILE.type)
+        self.eat(LPAREN)
+        expression = self.expression()
+        self.eat(RPAREN)
+        block = self.scope_block()
+        return WhileStatement(expression, block)
+
+
     def statement(self):
         """statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
             | (var_assignment SEMICOLON)
             | (var_decl SEMICOLON)
-            | SEMICOLON"""
+            | SEMICOLON
+            | while_statement
+            | ifstatement"""
 
         if self.current_token.type == ID and self.peek_token().type == LPAREN:
             statement = self.funccall()
@@ -100,8 +112,18 @@ class Parser:
             # Empty statement
             statement = NoOperation()
             self.eat(SEMICOLON)
+
+        elif self.current_token == IF:
+            statement = self.ifstatement()
+
+        elif self.current_token == WHILE:
+            statement = self.while_statement()
+        elif self.current_token == BREAK:
+            statement = self.break_statement()
+
         else:
             self.error()
+
         return statement
 
     def funccall(self):
@@ -117,6 +139,20 @@ class Parser:
                 parameters.append(self.expression())
         self.eat(RPAREN)
         return FunctionCall(name, parameters)
+
+    def ifstatement(self):
+        """ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?"""
+        self.eat(IF.type)
+        self.eat(LPAREN)
+        expression = self.expression()
+        self.eat(RPAREN)
+        body = self.statement()
+        if (self.current_token == ELSE):
+            self.eat(ELSE.type)
+            elsebody = self.statement()
+            return IfStatement(expression, body, elsebody)
+        return IfStatement(expression, body)
+
 
     def expression(self):
         """expression: INTEGER | funccall | var assignment"""
@@ -163,7 +199,7 @@ class Parser:
                 nodes.append(decl)        # add the assignment
 
             elif isinstance(decl, Variable):
-                declaration = VarDeclaration(decl.name, d_type)
+                declaration = VariableDeclaration(decl.name, d_type)
                 nodes.append(declaration)
             else:
                 raise Exception("Invalid declaration")
@@ -201,3 +237,8 @@ class Parser:
             self.error()
 
         return node
+
+    def break_statement(self):
+        self.eat(BREAK.type)
+        self.eat(SEMICOLON)
+        return BreakStatement()
