@@ -19,6 +19,8 @@ class Token:
     __repr__ = __str__
 
 
+#
+
 LPAREN = TokenType("LPARAN(")
 RPAREN = TokenType("RPARAN)")
 OPENCURLY = TokenType("OPENCURLY{")
@@ -26,9 +28,19 @@ CLOSE_CURLY = TokenType("CLOSECURLY}")
 SEMICOLON = TokenType("SEMICOLON;")
 COMA = TokenType("COMA,")
 EOF = TokenType("EOF")
+COLON = TokenType("COLON")
 
 __WHILE = TokenType("WHILE")
 WHILE = Token(__WHILE, "WHILE")
+
+__SWITCH = TokenType("SWITCH")
+SWITCH = Token(__SWITCH, "SWITCH")
+
+__CASE = TokenType("CASE")
+CASE = Token(__CASE, "CASE")
+
+__DEFAULT = TokenType("DEFAULT")
+DEFAULT = Token(__DEFAULT, "DEFAULT")
 
 __FOR = TokenType("FOR")
 FOR = Token(__FOR, "FOR")
@@ -68,5 +80,8 @@ KEYWORDS = {'void': VOID,
             'int': INT,
             'while': WHILE,
             'break': BREAK,
-            'for': FOR
+            'for': FOR,
+            'switch': SWITCH,
+            'case': CASE,
+            'default': DEFAULT
             }

@@ -6,7 +6,13 @@ code = """
 void main(){
 
 
-    for(1;1;1){
+    switch(1){
+    case 1:
+        break;
+    case 2:
+        print(2);
+    default:
+        break;
     }
 
 

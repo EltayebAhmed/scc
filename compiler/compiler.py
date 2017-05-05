@@ -1,4 +1,4 @@
-from ast.core import NodeVisitor, ExplicitConstant, WhileStatement, MultiNode
+from ast.core import NodeVisitor, ExplicitConstant, WhileStatement, SwitchStatement
 from tokens import INT
 
 
@@ -7,7 +7,7 @@ class LoopSwitchStack:
         self._items = []
 
     def add_item(self, item):
-        assert (isinstance(item, WhileStatement) )
+        assert (isinstance(item, WhileStatement) or isinstance(item, SwitchStatement))
         self._items.append(item)
 
     def exit_item(self, item):
@@ -122,9 +122,36 @@ section .text\n"""
         self.loop_switch_stack.exit_item(node)
         return code
 
+    def visit_SwitchStatement(self, node):
+        self.loop_switch_stack.add_item(node)
+        code = ""
+        end_switch_label = "end_switch_" + str(id(node))
+        for case in node.cases.nodes:
+            end_case_label = "end_case_"+str(id(case))
+            code += self.visit(node.expression)
+            code += self.visit(case.nodes[0])
+            code += "pop eax\n"
+            code += "cmp eax,[esp]\n"
+            code += "add esp,4\n"
+            code += "jne " + end_case_label + "\n"
+            code += self.visit(case.nodes[1])
+            code += end_case_label+":\n"
 
+        if node.default is not None:
+            code += self.visit(node.default)
+
+        code += end_switch_label + ":\n"
+
+        self.loop_switch_stack.exit_item(node)
+
+        return code
 
     def visit_BreakStatement(self, node):
         top_item = self.loop_switch_stack.get_top_loop_switch()
-        code = "jmp __while_label_end" + str(id(top_item)) + ":\n"
+        if isinstance(top_item, WhileStatement):
+            code = "jmp __while_label_end" + str(id(top_item)) + ":\n"
+        elif isinstance(top_item, SwitchStatement):
+            code = "jmp " + "end_switch_" + str(id(top_item)) + "\n"
+        else:
+            raise Exception("Invalid syntax")
         return code
