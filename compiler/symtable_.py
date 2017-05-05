@@ -2,13 +2,17 @@ from tokens import INT
 from collections import namedtuple
 from ast.core import ScopeBlock, NodeVisitor
 from cookbook import Enum
+from collections import  OrderedDict
 
 class Symbol:
     def __init__(self, name):
         self.name = name
 
+    def __hash__(self):
+        return hash(self.name) + 1232344324
+
     def __eq__(self, other):
-        return (type(other) == type(self)) and (other.name == self.name)
+        return other.name == self.name
 
 
 class SymbolType(Enum):
@@ -22,7 +26,7 @@ FUNCSYMBOL = SymbolType('FuncSym')
 class EmptyStackException(Exception):
     pass
 
-
+#This class should keep track of variable types in the stack, it will be needed when considering datatypes other than int.
 class StackTracker:
     def __init__(self):
         self._pos = 0   #  location of top of stack relative to ebp
@@ -50,57 +54,96 @@ class StackTracker:
     def is_empty(self):
         return bool(self._items)
 
-GLOBAL = ScopeBlock([])
+class OutOfScopeAccessException(Exception):
+    pass
 
+class ScopeObject:
+    def __init__(self,ScopeBlockNode,start_relative_to_prev):
+        self.ScopeBlockNode = ScopeBlockNode
+        self.start_relative_to_prev =  start_relative_to_prev
+        self.end_relative_to_start = 0
+    def incrementRelativeEnd(self,num):
+        self.end_relative_to_start += num
+
+    #Todo scope_object might not be active, take care for this problem later
+    def get_start_relative_to_scope(self,scope_object,scope_stack):
+        start_relative_to_scope_start = 0
+        count_on = False
+        multiple = 1
+        if scope_stack.is_active(scope_object) and scope_stack.is_active(self):
+            for temp in scope_stack:
+                if(temp == self):
+                    if (count_on == False):
+                        count_on = True
+                    else:
+                        count_on = False
+                if(temp == scope_object):
+                    if(count_on == False):
+                        count_on = True
+                        multiple = -1
+                    else:
+                        count_on = False
+                if(count_on == True):
+                    start_relative_to_scope_start +=  scope_stack.curren_scope().end_relative_to_start+4 #The +4 is because every scope block has ebp pushed
+        start_relative_to_scope_start *= multiple
+        return start_relative_to_scope_start
+
+GlobalScopeBlock = ScopeBlock([])
+GlobalScopeObject = ScopeObject(GlobalScopeBlock,0)
 
 class ScopeStack:
     def __init__(self):
-        self._scopes = [GLOBAL]
+        self._scopes = [GlobalScopeObject]
 
     def enter_scope(self, scope):
-        assert (isinstance(scope, ScopeBlock))
+        assert (isinstance(scope, ScopeObject))
         self._scopes.append(scope)
 
     def exit_scope(self, scope):
         # 'eat' scope
-        assert (scope!= GLOBAL)
-        assert (scope._scopes[-1]== scope)
+        assert (scope!= GlobalScopeObject)
+        assert (self._scopes[-1]== scope)
         self._scopes.pop()
 
     def is_active(self, scope):
         """Return true if 'scope' is active"""
-        assert (isinstance(scope, ScopeBlock))
+        assert (isinstance(scope, ScopeObject))
         return scope in self._scopes
 
     def current_scope(self):
-        return self._scopes[:-1]
+        assert (self._scopes)
+        return self._scopes[-1]
 
-SymbolTableEntry = namedtuple('SymbolTableEntry', ('symbol', 'type', 'scope' ))
+
+SymbolTableEntry = namedtuple('SymbolTableEntry', ('symbol', 'type', 'scope'))
 
 
 class SymbolTable:
     def __init__(self):
-        self._entries = {} # (entry: position in stack)
+        self._entries = OrderedDict() # (entry: position of variable relative to scope)
+
 
     def entries(self):
         return iter(self._entries.keys())
 
-    def add_entry(self,entry, position=None):
-        assert isinstance(position, int)
+    def add_entry(self,entry, offest):
+        assert isinstance(offest, int)
         assert (isinstance(entry, SymbolTableEntry))
-        self._entries[entry] = position
+        self._entries[entry] = offest
 
-    def get_position(self, entry):
+    def get_offset(self, entry):
         if entry not in self._entries.keys():
             raise Exception('Invalid Entry')
-        return self._entries[entry]
+        offset = self._entries[entry]
+        return offset
 
     def get_entry_by_symbol(self, symbol):
         # we will iterate in reverse to get the nearest scoped shadow
-        for entry in self._entries[::-1]:
+        for entry in list(self._entries.keys())[::-1]:
             if entry.symbol == symbol:
                 return entry
         return None
+
 
 class SemanticError(Exception):
     pass
@@ -110,6 +153,8 @@ class SymbolTableBuilder(NodeVisitor):
         self._scope_stack = ScopeStack()
         self._symtable = SymbolTable()
 
+    def getSymbolTable(self):
+        return self._symtable
     def visit_Program(self, node):
         for function in node.functions:
             self.visit(function)
@@ -122,10 +167,12 @@ class SymbolTableBuilder(NodeVisitor):
             self.visit(node)
 
     def visit_ScopeBlock(self, node):
-        self._scope_stack.enter_scope(node)
+        start_relative_to_prev = self._scope_stack.current_scope().end_relative_to_start
+        nodeScopeObject = ScopeObject(node, start_relative_to_prev)
+        self._scope_stack.enter_scope(nodeScopeObject)
         for statement in node.statements:
             self.visit(statement)
-        self._scope_stack.exit_scope(node)
+        self._scope_stack.exit_scope(nodeScopeObject)
 
     def visit_NoOperation(self, node):
         pass
@@ -149,10 +196,12 @@ class SymbolTableBuilder(NodeVisitor):
         pass
 
     def visit_VariableDeclaration(self, node):
+        self._scope_stack.current_scope().incrementRelativeEnd(4)
         sym = Symbol(node.name)
         cur_scope = self._scope_stack.current_scope()
-        entry = SymbolTableEntry(symbol=sym, type=node.d_type, scope=cur_scope)
-        self._symtable.add_entry(entry, None)
+        offset = self._scope_stack.current_scope().end_relative_to_start
+        entry = SymbolTableEntry(symbol=sym, type=node.type, scope=cur_scope)
+        self._symtable.add_entry(entry, offset)
 
     def visit_VariableAssignment(self, node):
         pass
@@ -162,3 +211,9 @@ class SymbolTableBuilder(NodeVisitor):
         entry = self._symtable.get_entry_by_symbol(sym)
         if entry is None:
             raise SemanticError("Use of undeclared variable")
+        offset = self._symboltable.get_offset(entry)
+        currentScope = self._scope_stack.current_scope()
+        if entry.scope != currentScope:
+            relativeincrement = currentScope.get_start_relative_to_scope(entry.scope, self._scope_stack)
+            if relativeincrement == 0 and currentScope == entry.scope:
+                raise  OutOfScopeAccessException("You are trying to access a variable that is not visible within current scope!")

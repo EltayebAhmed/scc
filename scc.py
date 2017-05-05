@@ -1,7 +1,7 @@
 from ast.visualizer import Visualizer
 from parser_ import Parser
 from lexer import Lexer
-from compiler.compiler import Compiler
+from compiler.compiler import *
 code = """
 void main(){
 
@@ -23,8 +23,12 @@ void main(){
 }
 """
 code = """void main(){
-    int x = 5;
-    printf(x);
+    int x;
+    int y;
+    {
+        int z;
+        printf(x,y,z);
+    }
     return;
 }
 """
