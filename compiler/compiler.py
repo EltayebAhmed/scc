@@ -216,3 +216,16 @@ mov ebp, esp\n"""
         else:
             raise Exception("Invalid syntax")
         return code
+
+    def visit_ExpressionPoper(self, node):
+        old_stack_pos = self.stack_pos
+        code = self.visit(node.expression)
+        if self.stack_pos > old_stack_pos:
+            raise Exception("The Stack has been corrupted")
+        elif self.stack_pos < old_stack_pos:
+            difference = old_stack_pos - self.stack_pos
+            code += "add esp %d\n" % difference
+            self.stack_pos += difference
+        else:
+            assert (self.stack_pos == old_stack_pos) # If this assertion fails we are in deep shit
+        return code
