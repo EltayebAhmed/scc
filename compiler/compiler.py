@@ -200,10 +200,12 @@ mov ebp, esp\n"""
         return code
 
     def visit_ConstantString(self, node):
-        code = ""
-        code += node.name + ' : db "' + node.string + '",0'
-        assert ('\n' not in node.string)  # we do not support escapc chars yet </3
-        self.strings.append(code)
+        string = list(node.string)
+        string = map(lambda x:str(ord(x)),  string)
+        string = ",".join(string)
+
+        define_code = node.name + ' : db %s,0' % string
+        self.strings.append(define_code)
         self.stack_pos-=4
         return "push %s\n" % node.name
 
@@ -216,3 +218,4 @@ mov ebp, esp\n"""
         else:
             raise Exception("Invalid syntax")
         return code
+

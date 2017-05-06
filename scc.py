@@ -14,7 +14,7 @@ void main(){
 """
 code = """
 void main(){
-    printf("ABC%d",(3+5)*12);
+    printf("abc\nabc\nabc");
 }
 """
 
