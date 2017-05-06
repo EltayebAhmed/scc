@@ -207,8 +207,9 @@ class SymbolTableBuilder(NodeVisitor):
         sym = Symbol(node.callee_name)
         key = SymbolTableKey(sym, GlobalScopeObject)
         if not self._symtable.iskey_available(key):
-            print("Waring assuming <" + node.callee_name + "> is an external function ")
-            print("Warning! this is still implemented!")
+            #print("Waring assuming <" + node.callee_name + "> is an external function ")
+            #print("Warning! this is still implemented!")
+            pass
         elif self._symtable.get_d_type(key) != FUNCSYMBOL:
             raise SemanticError('Cannot call non function %s'%(sym.name))
         else:
