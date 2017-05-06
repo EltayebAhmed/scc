@@ -1,7 +1,9 @@
 from ast.core import NodeVisitor, ExplicitConstant, WhileStatement, SwitchStatement
 from tokens import INT
+from compiler.symtable_ import *
 
-from tokens import *
+from token import *
+#Todo implement Statement that encloses expression and makes sure no unused expression leaves something in the stack
 
 class LoopSwitchStack:
     def __init__(self):
@@ -26,12 +28,17 @@ class LoopSwitchStack:
 class Compiler(NodeVisitor):
     def __init__(self, parser):
         self.parser = parser
+        self._symboltable = None
         self.stack_pos = 0  # This will become an object later
+        self.scope_stack = ScopeStack()
         self.loop_switch_stack = LoopSwitchStack()
         self.strings = []
 
     def compile(self):
         head = self.parser.parse()
+        symbol_builder = SymbolTableBuilder()
+        symbol_builder.visit(head)
+        self._symboltable = symbol_builder.getSymbolTable()
         return self.visit(head)
 
     def visit_IfStatement(self, node):
@@ -40,7 +47,7 @@ class Compiler(NodeVisitor):
         code = ""
         code += self.visit(node.expression)
         code += "pop eax\n"
-        code += "cmp eax,0\n";
+        code += "cmp eax,0\n"
         code += "jz " + endiflabel + "\n"
         self.stack_pos += 4
         code += self.visit(node.body)
@@ -71,9 +78,19 @@ class Compiler(NodeVisitor):
 
     def visit_ScopeBlock(self, node):
         # later scoping will be handled here as well
+        self.scope_stack.current_scope().incrementRelativeEnd(4)
+        start_relative_to_prev = self.scope_stack.current_scope().end_relative_to_start
+        nodeScopeObject = ScopeObject(node, start_relative_to_prev)
+        self.scope_stack.enter_scope(nodeScopeObject)
         code = ""
+        code += "push ebp\n"
+        code += "mov ebp,esp\n"
         for statement in node.statements:
             code += self.visit(statement)
+        code += "mov esp,ebp\n"
+        code += "pop ebp"
+        self.scope_stack.exit_scope(nodeScopeObject)
+        self.scope_stack.current_scope().incrementRelativeEnd(-4)
         return code
 
     def visit_MultiNode(self, node):
@@ -86,12 +103,7 @@ class Compiler(NodeVisitor):
         # TODO!!!! function declarations should have a jump to right after the body to
         # handle nested functions correctly
         code = "_%s: \n" % node.name
-        code += """push ebp
-mov ebp, esp\n"""
-        self.stack_pos -= 4
-
         code += self.visit(node.body)
-        code += "pop ebp\nret\n"
         self.stack_pos += 4
 
         return code
@@ -215,4 +227,57 @@ mov ebp, esp\n"""
             code = "jmp " + "end_switch_" + str(id(top_item)) + "\n"
         else:
             raise Exception("Invalid syntax")
+        return code
+
+
+    def visit_VariableDeclaration(self, node):
+        code = ""
+        code += "sub esp,4\n"  # to be edited when floats arrive
+        self.scope_stack.current_scope().incrementRelativeEnd(4)
+        self.stack_pos -= 4
+        return code
+
+
+    def visit_VariableAssignment(self, node):
+        code = ""
+        code += self.visit(node.value)
+        code += "pop eax\n"
+        self.stack_pos += 4
+        sym = Symbol(node.name)
+        key = None
+        for scope in reversed(list(self.scope_stack.getScopes())):
+            key = SymbolTableKey(sym, scope)
+            if self._symboltable.iskey_available(key) and self._symboltable.get_d_type(key) != FUNCSYMBOL:
+                break
+        if key is None:
+            raise SemanticError("Use of undeclared variable whithin scope.")
+        offset = self._symboltable.get_offset(key)
+        currentScope = self.scope_stack.current_scope()
+        if key.scope != currentScope:
+            offset += currentScope.get_start_relative_to_scope(key.scope, self.scope_stack)
+        if offset > 0:
+            code += "mov [ebp-" + str(offset) + "],eax\n"  # review offset sign
+        elif offset < 0:
+            code += "mov [ebp+" + str(offset) + "],eax\n"
+        return code
+
+
+    def visit_Variable(self, node):
+        code = ""
+        sym = Symbol(node.name)
+        key = None
+        for scope in reversed(list(self.scope_stack.getScopes())):
+            key = SymbolTableKey(sym, scope)
+            if self._symboltable.iskey_available(key) and self._symboltable.get_d_type(key) != FUNCSYMBOL:
+                break
+        if key is None:
+            raise SemanticError("Use of undeclared variable whithin scope.")
+        offset = self._symboltable.get_offset(key)
+        currentScope = self.scope_stack.current_scope()
+        if key.scope != currentScope:
+            offset += currentScope.get_start_relative_to_scope(key.scope, self.scope_stack)
+        if offset > 0:
+            code += "push dword [ebp-" + str(offset) + "]\n" #review offset sign
+        elif offset < 0:
+            code += "push dword [ebp+" + str(offset) + "]\n"
         return code
