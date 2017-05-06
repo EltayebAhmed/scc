@@ -100,8 +100,8 @@ mov ebp, esp\n"""
         code = ""
         code += self.visit(node.left)
         code += self.visit(node.right)
-        code += "pop eax\n"
         code += "pop ebx\n"
+        code += "pop eax\n"
         if node.op.type == PLUS:
             code+=  "add eax, ebx\n"
             code += "push eax\n"
