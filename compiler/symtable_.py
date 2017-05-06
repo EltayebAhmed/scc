@@ -245,3 +245,35 @@ class SymbolTableBuilder(NodeVisitor):
         if key.scope != currentScope:
             offset += currentScope.get_start_relative_to_scope(key.scope, self._scope_stack) #relative increment
 
+    def visit_WhileStatement(self, node):
+        self.visit(node.expression)
+        self.visit(node.block)
+        
+
+    def visit_CaseStatement(self, node):
+
+        self.visit(node.switch_expr)
+        self.visit(node.expression)
+        self.visit(node.statements)
+
+
+    def visit_SwitchStatement(self, node):
+        
+        self.visit(node.cases)
+        if node.default is not None:
+            self.visit(node.default)
+
+        
+
+    def visit_ConstantString(self, node):
+        pass
+    def visit_BreakStatement(self, node):
+        pass
+
+    def visit_BinOp(self, node):
+        self.visit(node.left)
+        self.visit(node.right)
+        
+
+    def visit_UnaryOp(self, node):
+        self.visit(node.expression)
