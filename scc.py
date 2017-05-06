@@ -14,7 +14,7 @@ void main(){
 """
 code = """
 void main(){
-    printf("abc\nabc");
+    printf("abc\nabc\nabc");
 }
 """
 
