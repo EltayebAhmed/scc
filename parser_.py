@@ -359,7 +359,7 @@ RPAREN statement"""
         self.eat(COLON)
         case_statements = []
 
-        while self.current_token != CASE and self.current_token != DEFAULT and self.current_token != CLOSE_CURLY:
+        while self.current_token != CASE and self.current_token != DEFAULT and self.current_token.type != CLOSE_CURLY:
             case_statements.append(self.statement())
 
         case_statements_node = MultiNode(case_statements, "statement")
