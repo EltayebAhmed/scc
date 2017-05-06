@@ -2,10 +2,7 @@ from ast.core import NodeVisitor, ExplicitConstant, WhileStatement, SwitchStatem
 from tokens import *
 from compiler.symtable_ import *
 
-<<<<<<< HEAD
-from tokens import *
-=======
->>>>>>> master
+
 #Todo implement Statement that encloses expression and makes sure no unused expression leaves something in the stack
 
 class LoopSwitchStack:
