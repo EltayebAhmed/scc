@@ -200,9 +200,25 @@ mov ebp, esp\n"""
         return code
 
     def visit_ConstantString(self, node):
-        code = ""
+        def build_string(string, _is_recusive_call=False):
+            if not string:    # string is empty
+                return ""
+            result = ""
+            for i,character in enumerate(string):
+                if ord(char) <= 31:
+                    if _is_recusive_call:
+                        x = ""
+                        if result:
+                            x = '"' + result + '"'
+                        return x +"," + str(ord(char) ) + "," + build_string(string[1:], result)
+
+                else:
+                    result += char
+            return '"' + result + '"'
+
+
         code += node.name + ' : db "' + node.string + '",0'
-        assert ('\n' not in node.string)  # we do not support escapc chars yet </3
+        assert ('\n' not in node.string)  # we do not support escapce chars yet </3
         self.strings.append(code)
         self.stack_pos-=4
         return "push %s\n" % node.name
@@ -216,3 +232,4 @@ mov ebp, esp\n"""
         else:
             raise Exception("Invalid syntax")
         return code
+
