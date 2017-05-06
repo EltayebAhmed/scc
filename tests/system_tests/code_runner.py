@@ -1,7 +1,6 @@
 from lexer import Lexer
 from parser_ import Parser
 from compiler.compiler import Compiler
-import path
 import os
 import subprocess
 
