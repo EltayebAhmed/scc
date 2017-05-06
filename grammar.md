@@ -2,8 +2,8 @@
 
 This file is contains all the currently implemented grammar.
 
-%tokens LPAREN RPAREN OPENCURLY CLOSECURLY SEMICOLON COMA EOF WHILE BREAK SWITCH CASE COLON DEFAULT
-%tokens VOID
+%tokens LPAREN RPAREN OPENCURLY CLOSECURLY SEMICOLON COMA EOF WHILE BREAK SWITCH CASE COLON DEFAULT EQAULS
+%tokens VOID INT
 %tokens RETURN
 %tokens INTEGER STRING ID PLUS MINUS MUL DIV
 
@@ -21,6 +21,8 @@ scope_block: OPENCURLY (statement)* CLOSECURLY
 statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
+            | (var_assignment SEMICOLON)
+            | (var_decl SEMICOLON)
             | SEMICOLON
             | ifstatement
             | while_statement
@@ -37,12 +39,23 @@ switch_statement : SWITCH LPAREN expression RPAREN OPENCURLY case_statement* (DE
 
 case_statement : CASE expression COLON statement*
 
+
+var : ID
+
+var_decl: var_type var_identifier_decl (COMA var_identifier_decl)*
+
+var_identifier_decl: (var | var_assigment)
+
 ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?
 
+var_assignemnt: var EQUALS expression
+
+
+var_type: INT
 
 funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN
 expression   : term ((PLUS | MINUS) term)*
 term   : factor ((MUL | DIV) factor)*
-factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | LPAREN expression RPAREN
+factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | (LPAREN expression RPAREN) | var
 string : DOUBLE_QUOTE (CHAR | ESCAPED_CHAR)* DOUBLE_QUOTE
 

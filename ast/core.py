@@ -100,6 +100,22 @@ class Return(ASTNode):
         pass
 
 
+class VariableDeclaration(ASTNode):
+    def __init__(self, name, d_type):
+        self.name = name
+        self.type = d_type
+
+
+class Variable(ASTNode):
+    def __init__(self, name):
+        self.name = name
+
+class VariableAssignment(ASTNode):
+    def __init__(self, name, value):
+        self.value = value
+        self.name = name
+
+
 class IfStatement(ASTNode):
     def __init__(self, expression, body, elsebody=None):
         self.expression = expression

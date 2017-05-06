@@ -88,6 +88,10 @@ class Lexer(object):
                 self.advance()
                 return Token(COMA, ',')
 
+            if self.current_char == '=':
+                self.advance()
+                return Token(EQUALS, '=')
+
             if self.current_char.isdigit():
                 return self.number()
             if self.current_char == '+':

@@ -2,19 +2,14 @@ from ast.visualizer import Visualizer
 from parser_ import Parser
 from lexer import Lexer
 from compiler.compiler import Compiler
-code = """
-void main(){
-    printf(3--3*4);
 
-
-    printf("Hello world");
-
+code = """void main(){
+    int x;
+    int y;
+    y = 3;
+    printf(x);
+    printf(y);
     return;
-}
-"""
-code = """
-void main(){
-    printf("ABC%d",(3+5)*12);
 }
 """
 
