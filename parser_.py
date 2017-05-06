@@ -8,7 +8,7 @@ def do_something(*args):
     raise Exception('I shouldnt be called')
     return args
 
-
+type_specifiers = (INT,)
 class Parser:
     def __init__(self, lexer):
         self.lexer = lexer
@@ -32,7 +32,7 @@ class Parser:
             self.error()
 
     def factor(self):
-        """factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | LPAREN expression RPAREN"""
+        """factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | (LPAREN expression RPAREN) | var"""
         token = self.current_token
         if token.type == PLUS:
             self.eat(PLUS)
@@ -52,8 +52,13 @@ class Parser:
             return node
         elif token.type == STRING:
             return self.constant_string()
-        else:
-            return self.funccall()
+
+        elif token.type == ID:
+            if self.peek_token().type == LPAREN:
+                return self.funccall()
+            else:
+                return self.var()
+        self.error()
 
     def term(self):
         """term : factor ((MUL | INT_DIV) factor)*"""
@@ -170,6 +175,8 @@ RPAREN statement"""
         """statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
+            | (var_assignment SEMICOLON)
+            | (var_decl SEMICOLON)
             | SEMICOLON
             | ifstatement
             | while_statement
@@ -177,7 +184,7 @@ RPAREN statement"""
             | for_statement
             | switch_statement"""
 
-        if self.current_token.type == ID:
+        if self.current_token.type == ID and self.peek_token().type == LPAREN:
             statement = self.funccall()
             self.eat(SEMICOLON)
 
@@ -188,6 +195,15 @@ RPAREN statement"""
 
         elif self.current_token.type == OPENCURLY:
             statement = self.scope_block()
+
+        elif self.current_token in type_specifiers:
+            statement = self.var_decl()
+            self.eat(SEMICOLON)
+
+        elif self.current_token.type == ID and self.peek_token().type == EQUALS:
+            statement = self.var_assignment()
+            self.eat(SEMICOLON)
+
         elif self.current_token.type == SEMICOLON:
             # Empty statement
             statement = NoOperation()
@@ -277,6 +293,63 @@ RPAREN statement"""
 
         self.eat(CLOSE_CURLY)
         return switch_node
+
+
+
+    def var(self):
+        """var : ID"""
+        name = self.current_token.value
+        self.eat(ID)
+        return Variable(name)
+
+    def var_decl(self):
+        """var_decl: var_type var_identifier_decl (COMA var_identifier_decl)*"""
+        d_type = self.var_type()
+        identifier_decls = [self.var_identifier_decl()]
+        while self.current_token.type == COMA:
+            self.eat(COMA)
+            identifier_decls.append(self.var_identifier_decl())
+
+        # this will produce a list of statements each statement is either a single decl
+        # or a single assignment and pack them into a MultiNode
+        nodes = []
+        for decl in identifier_decls:
+            if isinstance(decl,VariableAssignment):
+                # variable declaration with initialization
+                declaration = VariableDeclaration(decl.name, d_type)
+                nodes.append(declaration) # add the declaration
+                nodes.append(decl)        # add the assignment
+
+            elif isinstance(decl, Variable):
+                declaration = VariableDeclaration(decl.name, d_type)
+                nodes.append(declaration)
+            else:
+                raise Exception("Invalid declaration")
+
+        return MultiNode(nodes, "Declare Assign")
+
+    def var_identifier_decl(self):
+        """var_identifier_decl: (var | var_assigment)"""
+        if self.lexer.peek_token().type == EQUALS:
+            return self.var_assignment()
+        else:
+            return self.var()
+
+    def var_assignment(self):
+        """var_assignemnt: var EQUALS expression"""
+        var_name = self.var().name
+        self.eat(EQUALS)
+        value = self.expression()
+        return VariableAssignment(var_name, value)
+
+    def var_type(self):
+        """var_type: INT"""
+        d_type = self.current_token
+        if d_type in type_specifiers:
+            self.eat(d_type.type)  # This is not great but is necessary
+        else:
+            self.error()
+        return d_type
 
     def case_statement(self, switch_expr):
         """case_statement : CASE expression COLON statement*"""
