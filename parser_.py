@@ -167,7 +167,7 @@ RPAREN statement"""
         return result
 
     def statement(self):
-        """statement : (funccall SEMICOLON)
+        """statement : expression SEMICOLON
             | (RETURN SEMICOLON)
             | scope_block
             | SEMICOLON
@@ -177,11 +177,7 @@ RPAREN statement"""
             | for_statement
             | switch_statement"""
 
-        if self.current_token.type == ID:
-            statement = self.funccall()
-            self.eat(SEMICOLON)
-
-        elif self.current_token in (RETURN,):
+        if self.current_token in (RETURN,):
             self.eat(RETURN.type)
             statement = Return()
             self.eat(SEMICOLON)
@@ -208,7 +204,8 @@ RPAREN statement"""
             statement = self.constant_string();
 
         else:
-            self.error()
+            expression = self.expression()
+            statement = ExpressionPoper(expression)
 
         return statement
 

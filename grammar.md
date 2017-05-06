@@ -18,7 +18,7 @@ funcdef : type_spec ID LPAREN RPAREN scope_block
 
 scope_block: OPENCURLY (statement)* CLOSECURLY
 
-statement : (funccall SEMICOLON)
+statement : expression SEMICOLON
             | (RETURN SEMICOLON)
             | scope_block
             | SEMICOLON
@@ -43,6 +43,6 @@ ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?
 funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN
 expression   : term ((PLUS | MINUS) term)*
 term   : factor ((MUL | DIV) factor)*
-factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | LPAREN expression RPAREN
+factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | (LPAREN expression RPAREN)
 string : DOUBLE_QUOTE (CHAR | ESCAPED_CHAR)* DOUBLE_QUOTE
 
