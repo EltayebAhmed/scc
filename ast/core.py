@@ -134,6 +134,10 @@ class BreakStatement(ASTNode):
     def __repr__(self):
         return "Break"
 
+class ExpressionPoper(ASTNode):
+    def __init__(self, expression):
+        self.expression = expression
+
 
 class NodeVisitor:
     def visit(self, node):
