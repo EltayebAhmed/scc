@@ -235,8 +235,14 @@ class Compiler(NodeVisitor):
     def visit_VariableDeclaration(self, node):
         code = ""
         code += "sub esp,4\n"  # to be edited when floats arrive
-        self.scope_stack.current_scope().incrementRelativeEnd(4)
         self.stack_pos -= 4
+        #Todo variable refrences not implemented. i.e, int&x
+        if node.depth < 0:
+            raise SemanticError("Refrence variables not yet impelmented")
+        for i in range(node.depth):
+            code += "push esp\n"
+            self.stack_pos -= 4
+        self.scope_stack.current_scope().incrementRelativeEnd(4)
         return code
 
 
@@ -258,7 +264,13 @@ class Compiler(NodeVisitor):
 
         offset -= currentScope.get_start_relative_to_scope(key.scope, self.scope_stack)
         if offset > 0:
-            code += "mov [ebp-" + str(offset) + "],eax\n"  # review offset sign
+            code += "push dword "
+            for i in range(-1, node.depth):
+                code += "["
+            code += "ebp-" + str(offset)
+            for i in range(-1, node.depth):
+                code += "]"
+            code += "\n"  # review offset sign
         elif offset < 0:
             code += "mov [ebp+" + str(abs(offset)) + "],eax\n"
         return code
@@ -279,10 +291,22 @@ class Compiler(NodeVisitor):
         # if scope is current scope the get_start_relative_to_scope method should return 0
         offset -= currentScope.get_start_relative_to_scope(key.scope, self.scope_stack)
         if offset > 0:
-            code += "push dword [ebp-" + str(offset) + "]\n" #review offset sign
+            code += "push dword "
+            for i in range(-1,node.depth):
+                code +="["
+            code+="ebp-" + str(offset)
+            for i in range(-1,node.depth):
+                code +="]"
+            code+="\n" #review offset sign
         elif offset < 0:
-            code += "push dword [ebp+" + str(abs(offset)) + "]\n"
+            code += "push dword "
+            for i in range(-1, node.depth):
+                code += "["
+            code += "ebp+" + str(offset)
+            for i in range(-1, node.depth):
+                code += "]"
+            code += "\n"
         else: #offset = 0
             code += "push dword [ebp]\n"
-        self.stack_pos -= 4
-        return code
+            self.stack_pos -= 4
+            return code

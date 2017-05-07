@@ -130,11 +130,13 @@ class SymbolTable:
     def __init__(self):
         self._offsets = OrderedDict()
         self._d_types = OrderedDict()
+        self._depths = OrderedDict()
 
-    def add_key(self,key, offset, d_type ):
+    def add_key(self,key, offset, d_type,depth=0 ):
         assert isinstance(key, SymbolTableKey)
         self._offsets[key] = offset
         self._d_types[key] = d_type
+        self._depths[key] = depth
 
     def get_offset(self, key):
         if key not in self._offsets.keys():
@@ -151,6 +153,10 @@ class SymbolTable:
     def get_d_type(self, key):
         assert (key in self._d_types.keys())
         return self._d_types[key]
+
+    def get_depth(self, key):
+        assert (key in self._depths.keys())
+        return self._depths[key]
 
     def iskey_available(self,key):
         if key in self._offsets.keys():
@@ -220,7 +226,8 @@ class SymbolTableBuilder(NodeVisitor):
         cur_scope = self._scope_stack.current_scope()
         offset = self._scope_stack.current_scope().end_relative_to_start
         key = SymbolTableKey(symbol=sym, scope=cur_scope)
-        self._symtable.add_key(key, offset,node.type)
+        self._symtable.add_key(key, offset,node.type, node.depth)
+
     def visit_VariableAssignment(self, node):
         pass
 

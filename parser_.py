@@ -296,13 +296,14 @@ RPAREN statement"""
         return switch_node
 
 
-
+    #This code works only with simple one & and multiple * operators
     def get_variable_depth(self):
         depth = 0;
-        
-        while self.current_token == AND:
-            depth
-        while self.current_token == MUL:
+        if self.current_token.type == AND:
+            self.eat(AND)
+            assert (self.peek_token() != AND)
+            return -1
+        while self.current_token.type == MUL:
             self.eat(MUL)
             depth+=1
         return depth
@@ -340,7 +341,7 @@ RPAREN statement"""
         return MultiNode(nodes, "Declare Assign")
 
     def var_identifier_decl(self):
-        """var_identifier_decl: (MUL)* (var | var_assigment)"""
+        """var_identifier_decl: (AND|(MUL)*) (var | var_assigment)"""
 
         if self.lexer.peek_token().type == EQUALS:
             return self.var_assignment()
