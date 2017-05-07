@@ -3,14 +3,15 @@ from parser_ import Parser
 from lexer import Lexer
 from compiler.compiler import Compiler
 
-code = """void main(){
-    int x;
-    int y;
-    y = 3;
-    printf(x);
-    printf(y);
-    return;
-}
+code = """
+        void main() {
+            int x = 12;
+            printf("%d  ",x);
+            { x = 3;
+            printf("%d  ",x);
+            }
+        printf("%d",x);
+        }
 """
 
 lex = Lexer(text=code)
