@@ -255,12 +255,12 @@ class Compiler(NodeVisitor):
             raise SemanticError("Use of undeclared variable whithin scope.")
         offset = self._symboltable.get_offset(key)
         currentScope = self.scope_stack.current_scope()
-        if key.scope != currentScope:
-            offset += currentScope.get_start_relative_to_scope(key.scope, self.scope_stack)
+
+        offset -= currentScope.get_start_relative_to_scope(key.scope, self.scope_stack)
         if offset > 0:
             code += "mov [ebp-" + str(offset) + "],eax\n"  # review offset sign
         elif offset < 0:
-            code += "mov [ebp+" + str(offset) + "],eax\n"
+            code += "mov [ebp+" + str(abs(offset)) + "],eax\n"
         return code
 
 
