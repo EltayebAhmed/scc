@@ -173,5 +173,22 @@ class VariablesTester(unittest.TestCase):
         scc_output = run_code(code)
         self.assertEquals(target_output, scc_output)
 
+    def test_variable_assignment_in_inner_scope(self):
+        code = """
+        void main() {
+            int x = 12;
+            printf("%d  ",x);
+            { x = 3;
+            printf("%d  ",x);
+            }
+        printf("%d",x);
+        }
+        """
+        target_output = "12  3  3"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
+
+
     if __name__ == "__main__":
         unittest.main()
