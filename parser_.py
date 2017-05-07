@@ -299,7 +299,11 @@ RPAREN statement"""
 
     def get_variable_depth(self):
         depth = 0;
-        while self.peek_token() == MUL:
+        
+        while self.current_token == AND:
+            depth
+        while self.current_token == MUL:
+            self.eat(MUL)
             depth+=1
         return depth
 
@@ -346,8 +350,6 @@ RPAREN statement"""
     def var_assignment(self):
         """var_assignemnt: var EQUALS expression"""
         var_ = self.var()
-        while self.current_token == MUL:
-            self.eat(MUL)
         self.eat(EQUALS)
         value = self.expression()
         return VariableAssignment(var_.name, var_.depth)
