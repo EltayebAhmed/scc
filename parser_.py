@@ -353,7 +353,7 @@ RPAREN statement"""
         var_ = self.var()
         self.eat(EQUALS)
         value = self.expression()
-        return VariableAssignment(var_.name, var_.depth)
+        return VariableAssignment(var_.name,value, var_.depth)
 
     def var_type(self):
         """var_type: INT"""

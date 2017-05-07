@@ -131,12 +131,12 @@ class VariablesTester(unittest.TestCase):
         code = """
         void main() {
             int z=1;
-            if(1){
+            {
                 int x = 2;
                printf("%i  ",x);
             }
 
-            if(1){
+            {
                 int y=7;
                 printf("%i  %i",y,z);
             }

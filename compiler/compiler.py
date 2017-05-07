@@ -236,12 +236,6 @@ class Compiler(NodeVisitor):
         code = ""
         code += "sub esp,4\n"  # to be edited when floats arrive
         self.stack_pos -= 4
-        #Todo variable refrences not implemented. i.e, int&x
-        if node.depth < 0:
-            raise SemanticError("Refrence variables not yet impelmented")
-        for i in range(node.depth):
-            code += "push esp\n"
-            self.stack_pos -= 4
         self.scope_stack.current_scope().incrementRelativeEnd(4)
         return code
 
@@ -264,15 +258,21 @@ class Compiler(NodeVisitor):
 
         offset -= currentScope.get_start_relative_to_scope(key.scope, self.scope_stack)
         if offset > 0:
-            code += "push dword "
+            code += "mov "
             for i in range(-1, node.depth):
                 code += "["
             code += "ebp-" + str(offset)
             for i in range(-1, node.depth):
                 code += "]"
-            code += "\n"  # review offset sign
+            code += ",eax\n"  # review offset sign
         elif offset < 0:
-            code += "mov [ebp+" + str(abs(offset)) + "],eax\n"
+            code += "mov "
+            for i in range(-1, node.depth):
+                code += "["
+            code += "ebp+" + str(abs(offset))
+            for i in range(-1, node.depth):
+                code += "]"
+            code += ",eax\n"  # review offset sign
         return code
 
 
@@ -302,11 +302,11 @@ class Compiler(NodeVisitor):
             code += "push dword "
             for i in range(-1, node.depth):
                 code += "["
-            code += "ebp+" + str(offset)
+            code += "ebp+" + str(abs(offset))
             for i in range(-1, node.depth):
                 code += "]"
             code += "\n"
         else: #offset = 0
             code += "push dword [ebp]\n"
-            self.stack_pos -= 4
-            return code
+        self.stack_pos -= 4
+        return code
