@@ -101,19 +101,22 @@ class Return(ASTNode):
 
 
 class VariableDeclaration(ASTNode):
-    def __init__(self, name, d_type):
+    def __init__(self, name, d_type,depth=0):
         self.name = name
         self.type = d_type
+        self.depth = depth
 
 
 class Variable(ASTNode):
-    def __init__(self, name):
+    def __init__(self, name,depth=0):
         self.name = name
+        self.depth = depth
 
 class VariableAssignment(ASTNode):
-    def __init__(self, name, value):
+    def __init__(self, name, value,depth=0):
         self.value = value
         self.name = name
+        self.depth = depth
 
 
 class IfStatement(ASTNode):

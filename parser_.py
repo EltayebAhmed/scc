@@ -18,6 +18,7 @@ class Parser:
     def peek_token(self):
         return self.lexer.peek_token()
 
+
     def error(self):
         raise Exception('Invalid syntax')
 
@@ -296,11 +297,17 @@ RPAREN statement"""
 
 
 
+    def get_variable_depth(self):
+        depth = 0;
+        while self.peek_token() == MUL:
+            depth+=1
+        return depth
+
     def var(self):
         """var : ID"""
         name = self.current_token.value
         self.eat(ID)
-        return Variable(name)
+        return Variable(name,self.get_variable_depth())
 
     def var_decl(self):
         """var_decl: var_type var_identifier_decl (COMA var_identifier_decl)*"""
@@ -329,7 +336,8 @@ RPAREN statement"""
         return MultiNode(nodes, "Declare Assign")
 
     def var_identifier_decl(self):
-        """var_identifier_decl: (var | var_assigment)"""
+        """var_identifier_decl: (MUL)* (var | var_assigment)"""
+
         if self.lexer.peek_token().type == EQUALS:
             return self.var_assignment()
         else:
@@ -337,10 +345,12 @@ RPAREN statement"""
 
     def var_assignment(self):
         """var_assignemnt: var EQUALS expression"""
-        var_name = self.var().name
+        var_ = self.var()
+        while self.current_token == MUL:
+            self.eat(MUL)
         self.eat(EQUALS)
         value = self.expression()
-        return VariableAssignment(var_name, value)
+        return VariableAssignment(var_.name, var_.depth)
 
     def var_type(self):
         """var_type: INT"""
