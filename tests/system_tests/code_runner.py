@@ -3,6 +3,7 @@ from parser_ import Parser
 from compiler.compiler import Compiler
 import os
 import subprocess
+import  time
 
 def run_code(text):
     """text should be a valid c program, code runner will compile and run the program and return its output
@@ -25,10 +26,13 @@ def run_code(text):
 
     p = subprocess.Popen(["nasm", "-fwin32",asm_file_name], stdout=subprocess.PIPE)
     out, err = p.communicate()
-    p = subprocess.Popen(["gcc", "-m32", obj_file_name, "-o", executable_file_name], stdout=subprocess.PIPE)
+    time.sleep(.5)
+    p = subprocess.Popen(["gcc", "-m32", obj_file_name, "-o", os.path.join(directory_path,executable_file_name)], stdout=subprocess.PIPE)
     out, err = p.communicate()
-    p = subprocess.Popen([executable_file_name], stdout=subprocess.PIPE)
+    time.sleep(.5)
+    p = subprocess.Popen([os.path.join(directory_path,executable_file_name)], stdout=subprocess.PIPE)
     out, err = p.communicate()
+    time.sleep(.5)
     out = out.decode("utf-8")
     return out
 
