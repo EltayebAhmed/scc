@@ -284,4 +284,5 @@ class Compiler(NodeVisitor):
             code += "push dword [ebp+" + str(abs(offset)) + "]\n"
         else: #offset = 0
             code += "push dword [ebp]\n"
+        self.stack_pos -= 4
         return code
