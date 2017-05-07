@@ -85,10 +85,12 @@ class Compiler(NodeVisitor):
         code = ""
         code += "push ebp\n"
         code += "mov ebp,esp\n"
+        self.stack_pos -= 4
         for statement in node.statements:
             code += self.visit(statement)
         code += "mov esp,ebp\n"
-        code += "pop ebp"
+        code += "pop ebp\n"
+        self.stack_pos += 4
         self.scope_stack.exit_scope(nodeScopeObject)
         self.scope_stack.current_scope().incrementRelativeEnd(-4)
         return code
@@ -274,10 +276,12 @@ class Compiler(NodeVisitor):
             raise SemanticError("Use of undeclared variable whithin scope.")
         offset = self._symboltable.get_offset(key)
         currentScope = self.scope_stack.current_scope()
-        if key.scope != currentScope:
-            offset += currentScope.get_start_relative_to_scope(key.scope, self.scope_stack)
+        # if scope is current scope the get_start_relative_to_scope method should return 0
+        offset -= currentScope.get_start_relative_to_scope(key.scope, self.scope_stack)
         if offset > 0:
             code += "push dword [ebp-" + str(offset) + "]\n" #review offset sign
         elif offset < 0:
-            code += "push dword [ebp+" + str(offset) + "]\n"
+            code += "push dword [ebp+" + str(abs(offset)) + "]\n"
+        else: #offset = 0
+            code += "push dword [ebp]\n"
         return code

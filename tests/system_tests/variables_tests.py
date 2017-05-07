@@ -89,26 +89,27 @@ class VariablesTester(unittest.TestCase):
     def test_nested_if_scope_Access_to_outside_scope(self):
         code = """
         void main() {
-            int x = 2;
+            int x = 99;
             if(x){
-                printf("%i",x);
+                printf("%d",x);
             }
         }
         """
-        target_output = "2"
+        target_output = "99"
         scc_output = run_code(code)
         self.assertEquals(target_output, scc_output)
 
     def test_nested_scope_access_to_scope_variables(self):
         code = """
         void main() {
-            if(1){
-                int x = 2;
+        int x = 122;
+            {
+
                printf("%i",x);
             }
         }
         """
-        target_output = "2"
+        target_output = "122"
         scc_output = run_code(code)
         self.assertEquals(target_output, scc_output)
 
@@ -132,16 +133,16 @@ class VariablesTester(unittest.TestCase):
             int z=1;
             if(1){
                 int x = 2;
-               printf("%i",x);
+               printf("%i  ",x);
             }
 
             if(1){
-                int y=3;
-                printf("%i%i",y,z);
+                int y=7;
+                printf("%i  %i",y,z);
             }
         }
         """
-        target_output = "213"
+        target_output = "2  7  1"
         scc_output = run_code(code)
         self.assertEquals(target_output, scc_output)
 
@@ -153,9 +154,10 @@ class VariablesTester(unittest.TestCase):
                 int x = 2;
                printf("%i",x);
             }
+            printf("%i",x);
         }
         """
-        target_output = "2"
+        target_output = "21"
         scc_output = run_code(code)
         self.assertEquals(target_output, scc_output)
 
@@ -163,10 +165,11 @@ class VariablesTester(unittest.TestCase):
         code = """
         void main() {
             int x = 0;
+            {}
 
         }
         """
-        target_output = "2"
+        target_output = ""
         scc_output = run_code(code)
         self.assertEquals(target_output, scc_output)
 

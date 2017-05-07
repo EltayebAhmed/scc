@@ -77,26 +77,18 @@ class ScopeObject:
         return hash(other) == hash(self)
 
     #Todo scope_object might not be active, take care for this problem later
-    def get_start_relative_to_scope(self,scope_object,scope_stack):
+    def get_start_relative_to_scope(self, target_scope_object, scope_stack):
         start_relative_to_scope_start = 0
-        count_on = False
-        multiple = 1
-        if scope_stack.is_active(scope_object) and scope_stack.is_active(self):
-            for temp in scope_stack:
-                if(temp == self):
-                    if (count_on == False):
-                        count_on = True
-                    else:
-                        count_on = False
-                if(temp == scope_object):
-                    if(count_on == False):
-                        count_on = True
-                        multiple = -1
-                    else:
-                        count_on = False
-                if(count_on == True):
-                    start_relative_to_scope_start +=  scope_stack.curren_scope().end_relative_to_start
-        start_relative_to_scope_start *= multiple
+        assert (scope_stack.current_scope() == self)
+        assert (scope_stack.is_active(target_scope_object))
+        current_stack = self # current stack should really have a reference to its parent, it makes sense? for future
+        for scope in reversed(list(scope_stack.getScopes())): # maybe the function should do the reverse at well? for future
+            if scope == target_scope_object:
+                break
+            else:
+                start_relative_to_scope_start += scope.start_relative_to_prev
+        else:
+            raise Exception("????????? something is very wrong")
         return start_relative_to_scope_start
 
 
@@ -129,7 +121,7 @@ class ScopeStack:
 
     def getScopes(self):
         scopes = self._scopes
-        return  scopes
+        return  iter(scopes)
 
 SymbolTableKey= namedtuple('SymbolTableEntry', ('symbol', 'scope'))
 
@@ -241,7 +233,7 @@ class SymbolTableBuilder(NodeVisitor):
                 break
         if key is None:
             raise SemanticError("Use of undeclared variable whithin scope.")
-        offset = self._symboltable.get_offset(key)
+        offset = self._symtable.get_offset(key)
         currentScope = self._scope_stack.current_scope()
         if key.scope != currentScope:
             offset += currentScope.get_start_relative_to_scope(key.scope, self._scope_stack) #relative increment
