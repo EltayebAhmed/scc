@@ -1,4 +1,4 @@
-# scc
+# scc #
 Simplified C Compiler , a project undertaken in the MicroProcessor and assembly language course in university of khartoum EEE161 under UST Mohanad Adb Elmonem Hassan supervision . 
 
 Consist of three stages :
@@ -8,7 +8,7 @@ Consist of three stages :
 
 it takes C code as an input and produces an assembly code in the x86 instruction set .
 
-# Currently implemented features :
+### Currently implemented features : ###
   * Arithmetic and logical operation
   * Variables
   * Switch
