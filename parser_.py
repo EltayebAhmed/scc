@@ -54,7 +54,7 @@ class Parser:
         elif token.type == STRING:
             return self.constant_string()
 
-        elif token.type == ID:
+        elif token.type == ID or token.type == MUL or token.type == AND:
             if self.peek_token().type == LPAREN:
                 return self.funccall()
             else:
@@ -201,7 +201,7 @@ RPAREN statement"""
             statement = self.var_decl()
             self.eat(SEMICOLON)
 
-        elif self.current_token.type == ID and self.peek_token().type == EQUALS:
+        elif self.peek_ID_equals_without_eating():
             statement = self.var_assignment()
             self.eat(SEMICOLON)
 
@@ -309,10 +309,11 @@ RPAREN statement"""
         return depth
 
     def var(self):
-        """var : ID"""
+        """var : (MUL)* | &? ID"""
+        depth = self.get_variable_depth()
         name = self.current_token.value
         self.eat(ID)
-        return Variable(name,self.get_variable_depth())
+        return Variable(name,depth)
 
     def var_decl(self):
         """var_decl: var_type var_identifier_decl (COMA var_identifier_decl)*"""
@@ -328,22 +329,42 @@ RPAREN statement"""
         for decl in identifier_decls:
             if isinstance(decl,VariableAssignment):
                 # variable declaration with initialization
-                declaration = VariableDeclaration(decl.name, d_type)
+                declaration = VariableDeclaration(decl.name, d_type, decl.depth)
                 nodes.append(declaration) # add the declaration
                 nodes.append(decl)        # add the assignment
 
             elif isinstance(decl, Variable):
-                declaration = VariableDeclaration(decl.name, d_type)
+                declaration = VariableDeclaration(decl.name, d_type, decl.depth)
                 nodes.append(declaration)
             else:
                 raise Exception("Invalid declaration")
 
         return MultiNode(nodes, "Declare Assign")
 
-    def var_identifier_decl(self):
-        """var_identifier_decl: (AND|(MUL)*) (var | var_assigment)"""
+    def peek_equals(self):#It Eats tokens!
+        if self.current_token.type == AND:
+            self.eat(AND)
+            assert (self.peek_token() != AND)
+        while self.current_token.type == MUL:
+            self.eat(MUL)
+        return self.lexer.peek_token().type == EQUALS
 
-        if self.lexer.peek_token().type == EQUALS:
+    def peek_ID_equals_without_eating(self):
+        templexer = self.lexer
+        temptokentype = None
+        while True:
+            temptoken= templexer.get_next_token()
+            if(temptoken.type != MUL):
+                break
+        if temptoken.type == ID:
+            temptoken = templexer.get_next_token()
+        else:
+            return False
+        return temptoken.type == EQUALS
+
+    def var_identifier_decl(self):
+        """var_identifier_decl: (var | var_assigment)"""
+        if self.peek_equals():
             return self.var_assignment()
         else:
             return self.var()

@@ -255,24 +255,23 @@ class Compiler(NodeVisitor):
             raise SemanticError("Use of undeclared variable whithin scope.")
         offset = self._symboltable.get_offset(key)
         currentScope = self.scope_stack.current_scope()
-
         offset -= currentScope.get_start_relative_to_scope(key.scope, self.scope_stack)
         if offset > 0:
-            code += "mov "
-            for i in range(-1, node.depth):
-                code += "["
-            code += "ebp-" + str(offset)
-            for i in range(-1, node.depth):
-                code += "]"
-            code += ",eax\n"  # review offset sign
+            sign_ = "-"
         elif offset < 0:
-            code += "mov "
-            for i in range(-1, node.depth):
-                code += "["
-            code += "ebp+" + str(abs(offset))
-            for i in range(-1, node.depth):
-                code += "]"
-            code += ",eax\n"  # review offset sign
+            sign_ = "+"
+        var_depth = self._symboltable.get_depth(key)
+        #Assuming syntax &var is not valid
+        assert (node.depth <= var_depth)
+        if node.depth ==0:
+            code += "mov [ebp" + sign_ + str(offset) + "],eax\n"
+        if node.depth > 0:
+            code += "mov edx,[ebp" + sign_ + str(offset) + "]\n"
+            for i in range(1, node.depth):
+                code += "mov edx,[edx]\n"
+            code += "mov [edx],eax\n"
+        #code += "push eax\n"
+        #self.stack_pos -=4
         return code
 
 
@@ -290,23 +289,24 @@ class Compiler(NodeVisitor):
         currentScope = self.scope_stack.current_scope()
         # if scope is current scope the get_start_relative_to_scope method should return 0
         offset -= currentScope.get_start_relative_to_scope(key.scope, self.scope_stack)
+        #if depth = -1 lea eax,[ebp- or + offset]
+        #if depth >= 0
+        # while i < depth
+        #   mov eax,[ebp - + offset]
+        #push eax
         if offset > 0:
-            code += "push dword "
-            for i in range(-1,node.depth):
-                code +="["
-            code+="ebp-" + str(offset)
-            for i in range(-1,node.depth):
-                code +="]"
-            code+="\n" #review offset sign
+            sign_ = "-"
         elif offset < 0:
-            code += "push dword "
-            for i in range(-1, node.depth):
-                code += "["
-            code += "ebp+" + str(abs(offset))
-            for i in range(-1, node.depth):
-                code += "]"
-            code += "\n"
-        else: #offset = 0
-            code += "push dword [ebp]\n"
+            sign_ = "+"
+        if node.depth == -1:
+            code += "lea eax,[ebp" + sign_ + str(offset) + "]\n"
+        if node.depth == 0:
+            code += "mov eax,[ebp" + sign_ + str(offset) + "]\n"
+        if node.depth > 0:
+            code += "mov eax,[ebp" + sign_ + str(offset) + "]\n"
+            for i in range(1, node.depth):
+                code += "mov eax,[edx]\n"
+            code += "mov eax,[eax]\n"
+        code+="push eax\n"
         self.stack_pos -= 4
         return code

@@ -40,11 +40,11 @@ switch_statement : SWITCH LPAREN expression RPAREN OPENCURLY case_statement* (DE
 case_statement : CASE expression COLON statement*
 
 
-var : ID
+var : (MUL)*|AND? ID
 
 var_decl: var_type var_identifier_decl (COMA var_identifier_decl)*
 
-var_identifier_decl: (MUL)* (var | var_assigment)
+var_identifier_decl: (var | var_assigment)
 
 ifstatement: IF LPAREN expression RPAREN statement (ELSE statement)?
 
