@@ -136,6 +136,175 @@ class ExpressionsTest(unittest.TestCase):
 
 		self.assertEquals(target_output,scc_output)
 
+	def test_single_bigger_than_or_equal_true(self):
+		code = """
+		void main(){
+		    printf("begin test ");
+    		if(4 >= 3){
+    		    printf("Hurray");
+    		}
+    		printf("end_test");
+		}
+		"""
+		target_output = "begin test " + "Hurray" + "end_test"
+		scc_output = run_code(code)
+		self.assertEquals(target_output,scc_output)
+
+	def test_sing_bigger_than_or_equal_false(self):
+		code = """
+		void main(){
+		    printf("begin test ");
+    		if(4 >= 5){
+    		    printf("Hurray");
+    		}
+    		printf("end_test");
+		}
+		"""
+		target_output = "begin test " + "end_test"
+		scc_output = run_code(code)
+		self.assertEquals(target_output,scc_output)
+
+    def test_single_less_than_or_equal_true(self):
+        code = """
+        		void main(){
+        		    printf("begin test ");
+            		if(4 <= 6){
+            		    printf("Hurray");
+            		}
+            		printf("end_test");
+        		}
+        		"""
+        target_output = "begin test " + "Hurray" + "end_test"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
+    def test_sing_less_than_or_equal_false(self):
+        code = """
+        		void main(){
+        		    printf("begin test ");
+            		if(4 <= 5){
+            		    printf("Hurray");
+            		}
+            		printf("end_test");
+        		}
+        		"""
+        target_output = "begin test " + "end_test"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
+    def test_single_bigger_than_true(self):
+        code = """
+            void main(){
+                printf("begin test ");
+                if(4 > 3){
+                    printf("Hurray");
+                }
+                printf("end_test");
+            }
+            """
+        target_output = "begin test " + "Hurray" + "end_test"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
+    def test_single_bigger_than_false(self):
+        code = """
+            void main(){
+                printf("begin test ");
+                if(4 > 3){
+                    printf("Hurray");
+                }
+                printf("end_test");
+            }
+            """
+        target_output = "begin test " + "end_test"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
+    def test_single_less_than_true(self):
+        code = """
+            void main(){
+                printf("begin test ");
+                if(4 < 5){
+                    printf("Hurray");
+                }
+                printf("end_test");
+            }
+            """
+        target_output = "begin test " + "Hurray" + "end_test"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
+    def test_sing_less_than_false(self):
+        code = """
+            void main(){
+                printf("begin test ");
+                if(4 < 5){
+                    printf("Hurray");
+                }
+                printf("end_test");
+            }
+            """
+        target_output = "begin test " + "end_test"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
+    def test_single_equal_true(self):
+        code = """
+            void main(){
+                printf("begin test ");
+                if(4 == 4){
+                    printf("Hurray");
+                }
+                printf("end_test");
+            }
+            """
+        target_output = "begin test " + "Hurray" + "end_test"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
+    def test_single_equal_false(self):
+        code = """
+            void main(){
+                printf("begin test ");
+                if(4 == 5){
+                    printf("Hurray");
+                }
+                printf("end_test");
+            }
+            """
+        target_output = "begin test " + "end_test"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
+    def test_single_not_equal_true(self):
+        code = """
+            void main(){
+                printf("begin test ");
+                if(4 != 5){
+                    printf("Hurray");
+                }
+                printf("end_test");
+            }
+            """
+        target_output = "begin test " + "Hurray" + "end_test"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
+    def test_single_not_equal_false(self):
+        code = """
+            void main(){
+                printf("begin test ");
+                if(4 != 4){
+                    printf("Hurray");
+                }
+                printf("end_test");
+            }
+            """
+        target_output = "begin test " + "end_test"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
+
 
 if __name__ == "__main__":
     unittest.main()
