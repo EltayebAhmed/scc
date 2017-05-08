@@ -2,8 +2,114 @@ from ast.core import NodeVisitor, ExplicitConstant, WhileStatement, SwitchStatem
 from tokens import *
 from compiler.symtable_ import *
 
+comparison_funnctions = {
+    "big": """
+        bigger:
+            mov ebx,[esp+4]
+            mov eax,[esp+8]
+            cmp eax, ebx
+            jg bigger_true
+            jle bigger_false
+            bigger_done:ret
 
+
+        bigger_true:
+            mov eax, 1
+            jmp bigger_done
+        bigger_false:
+            mov eax, 0
+            jmp bigger_done
+        """,
+    "less":"""
+        less:
+            mov ebx,[esp+4]
+            mov eax,[esp+8]
+            cmp eax, ebx
+            jl less_true
+            jle less_false
+            less_done:ret
+
+
+            less_true:
+                mov eax, 1
+                jmp less_done
+            less_false:
+                mov eax, 0
+                jmp less_done
+    """,
+    "bigeq":"""
+        bigeq:
+            mov ebx,[esp+4]
+            mov eax,[esp+8]
+            cmp eax, ebx
+            jge bigeq_true
+            jl bigeq_false
+            bigeq_done:ret
+
+
+            bigeq_true:
+                mov eax, 1
+                jmp bigeq_done
+            bigeq_false:
+                mov eax, 0
+                jmp bigeq_done
+    """,
+    "lesseq":"""
+            lesseq:
+                mov ebx,[esp+4]
+                mov eax,[esp+8]
+                cmp eax, ebx
+                jle lesseq_true
+                jg lesseq_false
+                lesseq_done:ret
+
+
+                lesseq_true:
+                    mov eax, 1
+                    jmp lesseq_done
+                lesseq_false:
+                    mov eax, 0
+                    jmp lesseq_done
+        """,
+    "eq":"""
+        eq:
+            mov ebx,[esp+4]
+            mov eax,[esp+8]
+            cmp eax, ebx
+            je eq_true
+            jne eq_false
+            eq_done:ret
+
+
+            eq_true:
+                mov eax, 1
+                jmp eq_done
+            eq_false:
+                mov eax, 0
+                jmp eq_done
+    """,
+
+
+    "noteq":"""
+        noteq:
+            mov ebx,[esp+4]
+            mov eax,[esp+8]
+            cmp eax, ebx
+            jne noteq_true
+            je noteq_false
+            noteq_done:ret
+
+
+           noteq_true:
+               mov eax, 1
+               jmp eq_done
+           noteq_false:
+               mov eax, 0
+               jmp noteq_done
+    """
+}
 #Todo implement Statement that encloses expression and makes sure no unused expression leaves something in the stack
+
 
 class LoopSwitchStack:
     def __init__(self):
@@ -26,6 +132,7 @@ class LoopSwitchStack:
 
 
 class Compiler(NodeVisitor):
+
     def __init__(self, parser):
         self.parser = parser
         self._symboltable = None
@@ -129,6 +236,36 @@ class Compiler(NodeVisitor):
             code += "xor edx, edx\n"
             code += "div ebx\n"
             code += "push eax\n"
+        elif node.op.type == BIG:
+            code += "push eax\npush ebx\n"
+            code += "call bigger\n"
+            code += "add esp,8\n"
+            code += "push eax\n"
+        elif node.op.type == LESS:
+            code += "push eax\npush ebx\n"
+            code += "call less\n"
+            code += "add esp,8\n"
+            code += "push eax\n"
+        elif node.op.type == BIGEQ:
+            code += "push eax\npush ebx\n"
+            code += "call bigeq\n"
+            code += "add esp,8\n"
+            code += "push eax\n"
+        elif node.op.type == LESSEQ:
+            code += "push eax\npush ebx\n"
+            code += "call lesseq\n"
+            code += "add esp,8\n"
+            code += "push eax\n"
+        elif node.op.type == EQ:
+            code += "push eax\npush ebx\n"
+            code += "call eq\n"
+            code += "add esp,8\n"
+            code += "push eax\n"
+        elif node.op.type == NOTEQ:
+            code += "push eax\npush ebx\n"
+            code += "call noteq\n"
+            code += "add esp,8\n"
+            code += "push eax\n"
         self.stack_pos += 4
         return code
 
@@ -161,6 +298,10 @@ class Compiler(NodeVisitor):
         for string in self.strings:
             data_section  += string+ "\n"
         code = header + data_section + "section .text\n" + definitions_body
+
+        for item in comparison_funnctions.values():
+            code+=item
+
         return code
 
     def visit_ExplicitConstant(self, node):
