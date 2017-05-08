@@ -75,8 +75,8 @@ class Parser:
         return node
 
 
-    def expression(self):
-        """expr   : term ((PLUS | MINUS) term)*
+    def operation(self):
+        """operation   : term ((PLUS | MINUS) term)*
         """
         node = self.term()
 
@@ -87,6 +87,54 @@ class Parser:
             elif token.type == MINUS:
                 self.eat(MINUS)
             node = BinOp(left=node, op=token, right=self.term())
+        return node
+
+
+
+    def comp(self):
+        """comp : operation ((BIG | LESS) operation)*
+        """
+        node = self.operation()
+
+        while self.current_token.type in (BIG, LESS):
+            token = self.current_token
+            if token.type == BIG:
+                self.eat(BIG)
+            elif token.type == LESS:
+                self.eat(LESS)
+            node = BinOp(left=node, op=token, right=self.operation())
+            return node
+        return node
+
+    def relationaleq(self):
+        """relationaleq : comp ((BIGEQ | LESSEQ) comp)*
+        """
+        node = self.comp()
+
+        while self.current_token.type in (BIGEQ, LESSEQ):
+            token = self.current_token
+            if token.type == BIGEQ:
+                self.eat(BIGEQ)
+            elif token.type == LESSEQ:
+                self.eat(LESSEQ)
+            node = BinOp(left=node, op=token, right=self.comp())
+            return node
+        return node
+
+    def expression(self):
+        """expression : relationaleq ((EQ | NOTEQ) relationaleq)*"""
+
+        node = self.relationaleq()
+
+        while self.current_token.type in (EQ, NOTEQ):
+            token = self.current_token
+            if token.type == EQ:
+                self.eat(EQ)
+            elif token.type == NOTEQ:
+                self.eat(NOTEQ)
+            node = BinOp(left=node, op=token, right=self.relationaleq())
+            return node
+
         return node
 
     def ret_type(self):
