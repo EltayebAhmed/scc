@@ -1,7 +1,7 @@
 # scc #
 Simplified C Compiler , a project undertaken in the MicroProcessor and assembly language course in university of khartoum EEE161 under UST Mohanad Adb Elmonem Hassan supervision . 
 
-Consist of three stages :
+Consists of three stages :
   * lexer
   * parser
   * compiler
