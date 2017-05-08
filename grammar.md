@@ -5,6 +5,9 @@ This file is contains all the currently implemented grammar.
 %tokens LPAREN RPAREN OPENCURLY CLOSECURLY SEMICOLON COMA EOF WHILE BREAK SWITCH CASE COLON DEFAULT EQAULS
 %tokens VOID INT
 %tokens RETURN
+%tokens INTEGER ID PLUS MINUS MUL DIV STRING
+%tokens BIG LESS
+%tokens BIGEQ LESSEQ
 %tokens INTEGER STRING ID PLUS MINUS MUL DIV
 
 
@@ -54,8 +57,18 @@ var_assignemnt: var EQUALS expression
 var_type: INT
 
 funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN
+<<<<<<<<<<<<<<<<<<<<<<< MASTER
 expression   : term ((PLUS | MINUS) term)*
 term   : factor ((MUL | DIV) factor)*
 factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | (LPAREN expression RPAREN) | var
 string : DOUBLE_QUOTE (CHAR | ESCAPED_CHAR)* DOUBLE_QUOTE
 
+===============================
+relationaleq : comp ((BIGEQ | LESSEQ) comp)*
+comp : operation ((BIG | LESS) operation)*
+operation : term ((PLUS | MINUS) term)*
+term   : factor ((MUL | DIV) factor)*
+factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | LPAREN expression RPAREN
+string : DOUBLE_QUOTE (CHAR | ESCAPED_CHAR)* DOUBLE_QUOTE
+
+HEAD >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
