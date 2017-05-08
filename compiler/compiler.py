@@ -26,7 +26,7 @@ comparison_funnctions = {
             mov eax,[esp+8]
             cmp eax, ebx
             jl less_true
-            jle less_false
+            jge less_false
             less_done:ret
 
 
