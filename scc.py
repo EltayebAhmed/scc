@@ -4,14 +4,9 @@ from lexer import Lexer
 from compiler.compiler import Compiler
 
 code = """
-        void main() {
-            int x = 12;
-            printf("%d  ",x);
-            { x = 3;
-            printf("%d  ",x);
-            }
-        printf("%d",x);
-        }
+void main(){
+    if(4 >= 3){printf("Hurray");}
+}
 """
 
 lex = Lexer(text=code)
