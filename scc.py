@@ -5,8 +5,16 @@ from compiler.compiler import Compiler
 
 code = """
         void main() {
-            int *x;
-            *x=2;
+            int z=1;
+            {
+                int x = 2;
+               printf("%i  ",x);
+            }
+
+            {
+                int y=7;
+                printf("%i  %i",y,z);
+        }
         }
 """
 

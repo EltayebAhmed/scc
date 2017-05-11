@@ -264,9 +264,9 @@ class Compiler(NodeVisitor):
         #Assuming syntax &var is not valid
         assert (node.depth <= var_depth)
         if node.depth ==0:
-            code += "mov [ebp" + sign_ + str(offset) + "],eax\n"
+            code += "mov [ebp" + sign_ + str(abs(offset)) + "],eax\n"
         if node.depth > 0:
-            code += "mov edx,[ebp" + sign_ + str(offset) + "]\n"
+            code += "mov edx,[ebp" + sign_ + str(abs(offset)) + "]\n"
             for i in range(1, node.depth):
                 code += "mov edx,[edx]\n"
             code += "mov [edx],eax\n"
@@ -299,11 +299,11 @@ class Compiler(NodeVisitor):
         elif offset < 0:
             sign_ = "+"
         if node.depth == -1:
-            code += "lea eax,[ebp" + sign_ + str(offset) + "]\n"
+            code += "lea eax,[ebp" + sign_ + str(abs(offset)) + "]\n"
         if node.depth == 0:
-            code += "mov eax,[ebp" + sign_ + str(offset) + "]\n"
+            code += "mov eax,[ebp" + sign_ + str(abs(offset)) + "]\n"
         if node.depth > 0:
-            code += "mov eax,[ebp" + sign_ + str(offset) + "]\n"
+            code += "mov eax,[ebp" + sign_ + str(abs(offset)) + "]\n"
             for i in range(1, node.depth):
                 code += "mov eax,[edx]\n"
             code += "mov eax,[eax]\n"
