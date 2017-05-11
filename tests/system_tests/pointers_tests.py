@@ -18,10 +18,10 @@ class PointersTester(unittest.TestCase):
     def test_pointer_two(self):
         code = """
         void main() {
-            int x = 1;
-            int* y = &x;
-            x = 5;
-            printf("%i",*x);
+        int y = 1;
+        int *x = &y;
+        *x = 2;
+        printf("%i",y);
         }
         """
         target_output = "2"

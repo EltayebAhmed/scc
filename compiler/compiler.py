@@ -116,16 +116,16 @@ class Compiler(NodeVisitor):
         code += self.visit(node.right)
         code += "pop ebx\n"
         code += "pop eax\n"
-        if node.op.type == PLUS:
+        if node.op.dtype == PLUS:
             code+=  "add eax, ebx\n"
             code += "push eax\n"
-        elif node.op.type == MINUS:
+        elif node.op.dtype == MINUS:
             code += "sub eax, ebx\n"
             code += "push eax\n"
-        elif node.op.type == MUL:
+        elif node.op.dtype == MUL:
             code += "mul ebx\n"
             code += "push eax\n"
-        elif node.op.type == INT_DIV:
+        elif node.op.dtype == INT_DIV:
             code += "xor edx, edx\n"
             code += "div ebx\n"
             code += "push eax\n"
@@ -134,7 +134,7 @@ class Compiler(NodeVisitor):
 
     def visit_UnaryOp(self, node):
         code = ""
-        op = node.op.type
+        op = node.op.dtype
         if op == PLUS:
             code += self.visit(node.expression)
 
@@ -165,7 +165,7 @@ class Compiler(NodeVisitor):
 
     def visit_ExplicitConstant(self, node):
 
-        if node.type == INT:
+        if node.dtype == INT:
             self.stack_pos -= 4
             return "push %i\n" % (node.value)
 

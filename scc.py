@@ -5,12 +5,8 @@ from compiler.compiler import Compiler
 
 code = """
         void main() {
-            int x = 12;
-            printf("%d  ",x);
-            { x = 3;
-            printf("%d  ",x);
-            }
-        printf("%d",x);
+            int *x;
+            *x=2;
         }
 """
 

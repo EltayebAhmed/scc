@@ -226,7 +226,7 @@ class SymbolTableBuilder(NodeVisitor):
         cur_scope = self._scope_stack.current_scope()
         offset = self._scope_stack.current_scope().end_relative_to_start
         key = SymbolTableKey(symbol=sym, scope=cur_scope)
-        self._symtable.add_key(key, offset,node.type, node.depth)
+        self._symtable.add_key(key, offset,node.dtype, node.depth)
 
     def visit_VariableAssignment(self, node):
         pass

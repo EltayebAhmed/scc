@@ -85,7 +85,7 @@ class ExplicitConstant(ASTNode):
     def __init__(self, value, type_):
         # At some point this should also have 'Data type field'
         self.value = value
-        self.type = type_
+        self.dtype = type_
 
 
 class ConstantString(ASTNode):
@@ -103,7 +103,7 @@ class Return(ASTNode):
 class VariableDeclaration(ASTNode):
     def __init__(self, name, d_type,depth=0):
         self.name = name
-        self.type = d_type
+        self.dtype = d_type
         self.depth = depth
 
 

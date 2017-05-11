@@ -1,9 +1,11 @@
 # this files contains the Token definition and token types
 
 from cookbook import Enum
+
 INTEGER, PLUS, MINUS, MUL, INT_DIV, EOF = (
     'INTEGER', 'PLUS', 'MINUS', 'MUL', 'INT_DIV', 'EOF'
 )
+
 
 class TokenType(Enum):
     pass
@@ -12,11 +14,11 @@ class TokenType(Enum):
 class Token:
     def __init__(self, type_, value):
         assert (isinstance(type_, TokenType))
-        self.type = type_
+        self.dtype = type_
         self.value = value
 
     def __str__(self):
-        return "<Token, %s: %s>" % (self.type.name, self.value)
+        return "<Token, %s: %s>" % (self.dtype.name, self.value)
 
     __repr__ = __str__
 
@@ -35,9 +37,9 @@ EQUALS = TokenType("EQUALS")
 ESCAPED_CHAR = TokenType("ESCAPED_CHAR")
 PLUS = TokenType("PLUS+")
 MINUS = TokenType("MINUS-")
-MUL= TokenType("MUL*")
+MUL = TokenType("MUL*")
 AND = TokenType("AND&")
-INT_DIV= TokenType("INT_DIV//")
+INT_DIV = TokenType("INT_DIV//")
 EOF = TokenType("EOF")
 COLON = TokenType("COLON")
 STRING = TokenType("STRING")
@@ -56,8 +58,6 @@ DEFAULT = Token(__DEFAULT, "DEFAULT")
 
 __FOR = TokenType("FOR")
 FOR = Token(__FOR, "FOR")
-
-
 
 ID = TokenType("ID")
 INTEGER = TokenType("INTEGER")

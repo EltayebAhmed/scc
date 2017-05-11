@@ -86,7 +86,7 @@ class Visualizer(NodeVisitor):
 
     def visit_VariableDeclaration(self,node):
         node_id = str(id(node))
-        self.graph.node(node_id, "Decl %s %s"%(node.type, node.name))
+        self.graph.node(node_id, "Decl %s %s"%(node.dtype, node.name))
         return node_id
 
     def visit_MultiNode(self, node):
