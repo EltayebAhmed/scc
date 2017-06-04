@@ -13,14 +13,11 @@ before_install:
 
 
 install:
-  - pip install coveralls
+  - pip install nosetests
 
 env:
   - PYTHONPATH=$PYTHONPATH:/opt/mantidnightly/bin
 
 script:
+  - nosetests tests/
 
-  - python setup.py nosetests
-
-after_success:
-- coveralls
