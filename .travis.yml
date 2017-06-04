@@ -15,6 +15,10 @@ before_install:
 install:
   - pip install nose
 
+env:
+  - PYTHONPATH=$PYTHONPATH:/home/travis/build/EltayebAhmed/scc/
+
+
 script:
   - nosetests tests/
 
