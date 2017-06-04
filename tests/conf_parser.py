@@ -8,4 +8,11 @@ for line in conf_file.readlines():
     line = line.split("#")[0]  # strip out comments
     line = line.strip()
     if line:
-        build_chain.append(line)
+        line = line.split("=>")
+        command = line[0].strip()
+        assert len(line) <= 2
+        if len(line) ==2:
+            file = line[1].strip()
+        else:
+            file = ""
+        build_chain.append((command, file))
