@@ -56,7 +56,7 @@ class Parser:
         elif token.type == ID:
             if self.peek_token().type == LPAREN:
                 return self.funccall()
-            elif self.peek.token().type == EQUALS:
+            elif self.peek_token().type == EQUALS:
                 return self.var_assignment()
             else:
                 return self.var()
@@ -186,26 +186,36 @@ class Parser:
         return WhileStatement(expression, block)
 
     def for_statement(self):
-        """for_statement : FOR LPAREN expression (COMA expression)* SEMICOLON expression SEMICOLON expression (COMA expression)*
+        """for_statement :FOR LPAREN (expression (COMA expression)*)? SEMICOLON (expression)* SEMICOLON (expression (COMA expression)*)?
 RPAREN statement"""
         self.eat(FOR.type)
         self.eat(LPAREN)
-        initializer = self.expression()
-        initializers = [initializer]
 
-        while self.current_token == COMA:
-            self.eat(COMA)
-            initializers.append(self.expression())
+        if(self.current_token.type== SEMICOLON):
+            initializers = []
+
+        else:
+            initializers =[self.expression()]
+            while self.current_token == COMA:
+                self.eat(COMA)
+                initializers.append(self.expression())
 
         self.eat(SEMICOLON)
-        condition = self.expression()
-
+        if(self.current_token.type == SEMICOLON):
+            condition = ExplicitConstant(1, INT)
+        else:
+            condition = self.expression()
         self.eat(SEMICOLON)
-        increment = self.expression()
-        increments = [increment]
-        while self.current_token == COMA:
-            self.eat(COMA)
-            increments.append(self.expression())
+
+        if(self.current_token.type == SEMICOLON):
+            increment = []
+
+        else:
+            increment = self.expression()
+            increments = [increment]
+            while self.current_token == COMA:
+                self.eat(COMA)
+                increments.append(self.expression())
 
         self.eat(RPAREN)
 

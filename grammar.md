@@ -38,7 +38,7 @@ statement : (funccall SEMICOLON)
 
 while_statement : WHILE LPAREN expression RPAREN statement
 
-for_statement : FOR LPAREN expression (COMA expression)* SEMICOLON expression SEMICOLON expression (COMA expression)*
+for_statement : FOR LPAREN (expression (COMA expression)*)? SEMICOLON (expression)* SEMICOLON (expression (COMA expression)*)?
 RPAREN statement
 
 switch_statement : SWITCH LPAREN expression RPAREN OPENCURLY case_statement* (DEFAULT COLON statement*)? CLOSECURLY
@@ -59,7 +59,7 @@ var_assignemnt: var EQUALS expression
 
 var_type: INT
 
-funccall : ID LPAREN ((expression (COMA expression)*) | empty) RPAREN
+funccall : ID LPAREN ((expression (COMA expression)*))? RPAREN
 
 expression : relationaleq ((EQ | NOTEQ) relationaleq)*
 relationaleq : comp ((BIGEQ | LESSEQ) comp)*
