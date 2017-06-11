@@ -2,7 +2,7 @@ import unittest
 from tests.system_tests.code_runner import run_code
 
 class ForWhileTests(unittest.TestCase):
-    def test_single_if_true(self):
+    def test_single_for_loop(self):
         code = """
         void main()
         {   int i;
