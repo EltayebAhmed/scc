@@ -27,7 +27,6 @@ scope_block: OPENCURLY (statement)* CLOSECURLY
 statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
-            | (var_assignment SEMICOLON)
             | (var_decl SEMICOLON)
             | SEMICOLON
             | ifstatement
@@ -35,6 +34,7 @@ statement : (funccall SEMICOLON)
             | (BREAK SEMICOLON)
             | for_statement
             | switch_statement
+            | (expression SEMICOLON)
 
 while_statement : WHILE LPAREN expression RPAREN statement
 
@@ -66,5 +66,5 @@ relationaleq : comp ((BIGEQ | LESSEQ) comp)*
 comp : operation ((BIG | LESS) operation)*
 operation : term ((PLUS | MINUS) term)*
 term   : factor ((MUL | DIV) factor)*
-factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | (LPAREN expression RPAREN) | var
+factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | (LPAREN expression RPAREN) | var | var_assignment
 string : DOUBLE_QUOTE (CHAR | ESCAPED_CHAR)* DOUBLE_QUOTE

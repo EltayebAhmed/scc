@@ -58,6 +58,7 @@ class Visualizer(NodeVisitor):
         self.graph.edge(node_id, left_id)
         self.graph.edge(node_id, right_id)
         return node_id
+
     def visit_UnaryOp(self, node):
         node_id = str(id(node))
         self.graph.node(node_id, node.op.value)
@@ -203,3 +204,10 @@ class Visualizer(NodeVisitor):
     def visualize(self):
         self.visit(self.parser.parse())
         self.graph.render('test-output/round-table.gv', view=True)
+
+    def visit_ExpressionPopper(self, node):
+        node_id = str(id(node))
+        self.graph.node(node_id, "Expression Popper")
+        exp_id = self.visit(node.expression)
+        self.graph.edge(node_id, exp_id)
+        return node_id

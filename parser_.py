@@ -32,7 +32,7 @@ class Parser:
             self.error()
 
     def factor(self):
-        """factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | (LPAREN expression RPAREN) | var"""
+        """factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | (LPAREN expression RPAREN) | var | var_assignment"""
         token = self.current_token
         if token.type == PLUS:
             self.eat(PLUS)
@@ -56,8 +56,11 @@ class Parser:
         elif token.type == ID:
             if self.peek_token().type == LPAREN:
                 return self.funccall()
+            elif self.peek.token().type == EQUALS:
+                return self.var_assignment()
             else:
                 return self.var()
+
         self.error()
 
     def term(self):
@@ -223,14 +226,14 @@ RPAREN statement"""
         """statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
-            | (var_assignment SEMICOLON)
             | (var_decl SEMICOLON)
             | SEMICOLON
             | ifstatement
             | while_statement
             | (BREAK SEMICOLON)
             | for_statement
-            | switch_statement"""
+            | switch_statement
+            | (expression SEMICOLON)"""
 
         if self.current_token.type == ID and self.peek_token().type == LPAREN:
             statement = self.funccall()
@@ -246,10 +249,6 @@ RPAREN statement"""
 
         elif self.current_token in type_specifiers:
             statement = self.var_decl()
-            self.eat(SEMICOLON)
-
-        elif self.current_token.type == ID and self.peek_token().type == EQUALS:
-            statement = self.var_assignment()
             self.eat(SEMICOLON)
 
         elif self.current_token.type == SEMICOLON:
@@ -272,7 +271,8 @@ RPAREN statement"""
             statement = self.constant_string();
 
         else:
-            self.error()
+            statement = ExpressionPopper(self.expression())
+            self.eat(SEMICOLON)
 
         return statement
 
