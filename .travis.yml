@@ -1,0 +1,25 @@
+language: python
+
+sudo: required
+dist: trusty
+
+
+python:
+  - "3.5"
+
+cache: pip
+
+before_install:
+
+
+install:
+  - pip install nose
+  - sudo apt-get install nasm
+
+env:
+  - PYTHONPATH=$PYTHONPATH:/home/travis/build/EltayebAhmed/scc/
+
+
+script:
+  - nosetests tests/
+
