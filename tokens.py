@@ -1,6 +1,7 @@
 # this files contains the Token definition and token types
 from cookbook import Enum
 
+
 class TokenType(Enum):
     pass
 
