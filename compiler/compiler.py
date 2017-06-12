@@ -365,7 +365,8 @@ class Compiler(NodeVisitor):
     def visit_BreakStatement(self, node):
         top_item = self.loop_switch_stack.get_top_loop_switch()
         if isinstance(top_item, WhileStatement):
-            code = "jmp __while_label_end" + str(id(top_item)) + ":\n"
+            code = "mov esp,ebp\npop ebp\n"
+            code += "jmp __while_label_end" + str(id(top_item)) + "\n"
         elif isinstance(top_item, SwitchStatement):
             code = "jmp " + "end_switch_" + str(id(top_item)) + "\n"
         else:
