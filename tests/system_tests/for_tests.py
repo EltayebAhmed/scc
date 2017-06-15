@@ -1,8 +1,9 @@
 import unittest
 from tests.system_tests.code_runner import run_code
 
-class forTester(unittest.TestCase):
-    def test_single_if_true(self):
+class ForTester(unittest.TestCase):
+
+    def test_single_for_loop_with_initialization_condition_increment(self):
          code = """
              void main()
              {   int i;
