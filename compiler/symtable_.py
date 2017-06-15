@@ -221,8 +221,9 @@ class SymbolTableBuilder(NodeVisitor):
         offset = self._scope_stack.current_scope().end_relative_to_start
         key = SymbolTableKey(symbol=sym, scope=cur_scope)
         self._symtable.add_key(key, offset,node.type)
+
     def visit_VariableAssignment(self, node):
-        pass
+        self.visit(node.value)
 
     def visit_Variable(self, node):
         sym = Symbol(node.name)
@@ -260,6 +261,7 @@ class SymbolTableBuilder(NodeVisitor):
 
     def visit_ConstantString(self, node):
         pass
+
     def visit_BreakStatement(self, node):
         pass
 
@@ -269,4 +271,7 @@ class SymbolTableBuilder(NodeVisitor):
         
 
     def visit_UnaryOp(self, node):
+        self.visit(node.expression)
+
+    def visit_ExpressionPopper(self,node):
         self.visit(node.expression)

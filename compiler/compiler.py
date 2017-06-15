@@ -427,3 +427,12 @@ class Compiler(NodeVisitor):
             code += "push dword [ebp]\n"
         self.stack_pos -= 4
         return code
+
+    def visit_ExpressionPopper(self , node):
+        old_stack_pos = self.stack_pos
+        code = ""+self.visit(node.expression)
+
+        code += "add esp, %i\n" % (old_stack_pos - self.stack_pos)
+        self.stack_pos = old_stack_pos
+        return code
+

@@ -320,6 +320,18 @@ class ExpressionsTest(unittest.TestCase):
         scc_output = run_code(code)
         self.assertEquals(target_output, scc_output)
 
+    def test_expression_statement(self):
+        code = """
+                void main(){
+                    printf("begin test ");
+                    3*4;
+                    printf("end_test");
+                }
+                """
+        target_output = "begin test " + "end_test"
+        scc_output = run_code(code)
+        self.assertEquals(target_output, scc_output)
+
 
 
 if __name__ == "__main__":

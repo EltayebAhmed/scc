@@ -32,7 +32,7 @@ class Parser:
             self.error()
 
     def factor(self):
-        """factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | (LPAREN expression RPAREN) | var"""
+        """factor :(PLUS|MINUS)factor | INTEGER |  string | funccall | (LPAREN expression RPAREN) | var | var_assignment"""
         token = self.current_token
         if token.type == PLUS:
             self.eat(PLUS)
@@ -56,8 +56,11 @@ class Parser:
         elif token.type == ID:
             if self.peek_token().type == LPAREN:
                 return self.funccall()
+            elif self.peek_token().type == EQUALS:
+                return self.var_assignment()
             else:
                 return self.var()
+
         self.error()
 
     def term(self):
@@ -183,26 +186,36 @@ class Parser:
         return WhileStatement(expression, block)
 
     def for_statement(self):
-        """for_statement : FOR LPAREN expression (COMA expression)* SEMICOLON expression SEMICOLON expression (COMA expression)*
+        """for_statement :FOR LPAREN (expression (COMA expression)*)? SEMICOLON (expression)* SEMICOLON (expression (COMA expression)*)?
 RPAREN statement"""
         self.eat(FOR.type)
         self.eat(LPAREN)
-        initializer = self.expression()
-        initializers = [initializer]
 
-        while self.current_token == COMA:
-            self.eat(COMA)
-            initializers.append(self.expression())
+        if(self.current_token.type== SEMICOLON):
+            initializers = []
+
+        else:
+            initializers =[self.expression()]
+            while self.current_token == COMA:
+                self.eat(COMA)
+                initializers.append(self.expression())
 
         self.eat(SEMICOLON)
-        condition = self.expression()
-
+        if(self.current_token.type == SEMICOLON):
+            condition = ExplicitConstant(1, INT)
+        else:
+            condition = self.expression()
         self.eat(SEMICOLON)
-        increment = self.expression()
-        increments = [increment]
-        while self.current_token == COMA:
-            self.eat(COMA)
-            increments.append(self.expression())
+
+        if(self.current_token.type == SEMICOLON):
+            increment = []
+
+        else:
+            increment = self.expression()
+            increments = [increment]
+            while self.current_token == COMA:
+                self.eat(COMA)
+                increments.append(self.expression())
 
         self.eat(RPAREN)
 
@@ -223,14 +236,14 @@ RPAREN statement"""
         """statement : (funccall SEMICOLON)
             | (RETURN SEMICOLON)
             | scope_block
-            | (var_assignment SEMICOLON)
             | (var_decl SEMICOLON)
             | SEMICOLON
             | ifstatement
             | while_statement
             | (BREAK SEMICOLON)
             | for_statement
-            | switch_statement"""
+            | switch_statement
+            | (expression SEMICOLON)"""
 
         if self.current_token.type == ID and self.peek_token().type == LPAREN:
             statement = self.funccall()
@@ -246,10 +259,6 @@ RPAREN statement"""
 
         elif self.current_token in type_specifiers:
             statement = self.var_decl()
-            self.eat(SEMICOLON)
-
-        elif self.current_token.type == ID and self.peek_token().type == EQUALS:
-            statement = self.var_assignment()
             self.eat(SEMICOLON)
 
         elif self.current_token.type == SEMICOLON:
@@ -272,7 +281,8 @@ RPAREN statement"""
             statement = self.constant_string();
 
         else:
-            self.error()
+            statement = ExpressionPopper(self.expression())
+            self.eat(SEMICOLON)
 
         return statement
 

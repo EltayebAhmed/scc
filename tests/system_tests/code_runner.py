@@ -3,7 +3,7 @@ from parser_ import Parser
 from compiler.compiler import Compiler
 import os
 import subprocess
-import  time
+import time
 
 def run_code(text):
     """text should be a valid c program, code runner will compile and run the program and return its output
@@ -36,7 +36,7 @@ def run_code(text):
     out = out.decode("utf-8")
     return out
 
-code = """
+code ="""
     void main(){
         printf ("hello world %d",3);
     }

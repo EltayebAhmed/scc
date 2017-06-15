@@ -163,3 +163,8 @@ class NodeVisitor:
 
 class ASTPrinter(NodeVisitor):
     pass  # Implement me
+
+class ExpressionPopper(ASTNode):
+    def __init__(self,  expression):
+        self.expression = expression
+
